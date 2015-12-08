@@ -1,3 +1,6 @@
 [submodule "src/submodules/datacollectorreaderlibs"]
 	path = src/submodules/datacollectorreaderlibs
 	url = https://chris_flores@bitbucket.org/chris_flores/datacollectorreaderlibs.git
+[submodule "src/submodules/ParticleInfo"]
+	path = src/submodules/ParticleInfo
+	url = https://chris_flores@bitbucket.org/chris_flores/particleinfo.git
