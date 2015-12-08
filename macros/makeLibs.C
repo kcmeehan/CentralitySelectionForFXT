@@ -16,14 +16,14 @@ void makeLibs(TString opt=""){
   gSystem->SetBuildDir("$PWD/bin/",true);
 
   //Compile the contents of the sub-module
-  gSystem->CompileMacro("datacollectorreaderlibs/TrackInfo/TrackInfo.cxx","k");
-  gSystem->CompileMacro("datacollectorreaderlibs/PrimaryVertexInfo/PrimaryVertexInfo.cxx","k");
-  gSystem->CompileMacro("datacollectorreaderlibs/EventInfo/EventInfo.cxx","k");
+  gSystem->CompileMacro("src/submodules/datacollectorreaderlibs/TrackInfo/TrackInfo.cxx","k");
+  gSystem->CompileMacro("src/submodules/datacollectorreaderlibs/PrimaryVertexInfo/PrimaryVertexInfo.cxx","k");
+  gSystem->CompileMacro("src/submodules/datacollectorreaderlibs/EventInfo/EventInfo.cxx","k");
 
   //Set the Include Path to your header files
   gSystem->SetIncludePath(TString::Format("-I$ROOTSYS/include -I%s/inc",gSystem->pwd()));
 
   //Compile your source code
-  gSystem->CompileMacro("src/reader.cxx","k");
+  gSystem->CompileMacro("src/analysis/readerExample.cxx","k");
 
 }

@@ -13,9 +13,9 @@
 #include <TCanvas.h>
 
 //DataCollectorReaderLibs Sub-Module Includes
-#include "../datacollectorreaderlibs/TrackInfo/TrackInfo.h"
-#include "../datacollectorreaderlibs/PrimaryVertexInfo/PrimaryVertexInfo.h"
-#include "../datacollectorreaderlibs/EventInfo/EventInfo.h"
+#include "TrackInfo.h"
+#include "PrimaryVertexInfo.h"
+#include "EventInfo.h"
 
 void reader(TString inputDataFile, Int_t maxEvents=-1, TString outputFile=""){
 
