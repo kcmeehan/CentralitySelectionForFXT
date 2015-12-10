@@ -58,7 +58,7 @@ void skimmerAndBinner(TString inputDataFile,TString starLibrary,
   const int nParticles = 3;
   //************************************************************************
 
-  //Get the centrality Histogram from the User's function
+  //Get the centrality vector from the User's function
   std::vector<int> centralityBins = GetCentralityCuts();
   const int nCentralityBins = (int)centralityBins.size();
   
