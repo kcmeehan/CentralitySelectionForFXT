@@ -25,6 +25,8 @@ void makeLibs(TString opt=""){
   gSystem->SetIncludePath(TString::Format("-I$ROOTSYS/include -I%s/inc",gSystem->pwd()));
 
   //Compile your source code
+  gSystem->CompileMacro("userfiles/UserCuts.cxx","k");
   gSystem->CompileMacro("src/analysis/readerExample.cxx","k");
   gSystem->CompileMacro("src/analysis/skimmerAndBinner.cxx","k");
+
 }

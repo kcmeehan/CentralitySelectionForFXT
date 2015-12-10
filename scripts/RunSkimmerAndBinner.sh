@@ -1,9 +1,8 @@
 #!/bin/bash
 
-#This runs the RunReader.C macro which runs the reader.cxx function over 
-#the data specified in the data directory. Each file is run in parallel.
-#The script then waits until all the files have been processed before
-#hadding the files together
+#This runs the calls the RunSkimmerAndBinner.C macro which loads the necessary libraries
+#and then runs skimmerAndBinner.cxx. The code is run for each root file in the data
+# directory.
 
 ###########################################################
 #SET THE DATA DIRECTORY HERE
@@ -15,9 +14,12 @@ outputDirectory=../userfiles/AuAl_3_0/
 #SET THE NUMBER OF EVENTS HERE (USE -1 FOR ALL)
 nEvents=1000
 
-###########################################################
+#SET THE STAR LIBRARY VERSION
+starlib=SL10h
 
-#Array containing all the datafiles
+########################################################### 
+
+#Array containing all of the dataFiles
 dataFiles=( $dataDirectory/*.root )
 processID=()
 numberOfFiles=${#dataFiles[@]}
@@ -26,17 +28,17 @@ outFiles=()
 for i in ${dataFiles[@]}
 do
     echo "Running on dataFile: " $i
-    
+
     outFile=$(basename $i .root)
     outFile=$outputDirectory/"$outFile"_Processed.root
 
     outFiles+=($outFile)
 
-    root -l -q -b '../macros/RunReaderExample.C ('\"$i\"','$nEvents','\"$outFile\"')' > /dev/null 2>&1 &
-    
+    root -l -q -b ../macros/RunSkimmerAndBinner.C\(\"$i\",\"$starlib\",$nEvents,\"$outFile\"\) > /dev/null 2>&1 &
+
     processID+=($!)
     echo ${processID[@]}
-done 
+done
 wait ${processID[@]}
 
 hadd $outputDirectory/Combined.root ${outFiles[@]}
