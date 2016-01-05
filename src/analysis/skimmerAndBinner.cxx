@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <utility>
 
 #include <TString.h>
 #include <TFile.h>
@@ -187,8 +188,12 @@ void skimmerAndBinner(TString inputDataFile,TString starLibrary,
   else
     nEntries = tree->GetEntries();
 
-  //Loop Over the entries of the Tree. Make sure that each event, vertex, and track
-  //pass the cuts. For Tracks bin them in centrality, rapidity, and transverse mass
+  //-------------------------------------------------------------------------------
+  //SKIM DATA: Loop Over the tree to apply the event and vertex cuts. Track cuts
+  //           are applied during the binning phase below.
+  //-------------------------------------------------------------------------------
+  std::vector<std::pair<int,std::vector<int> > > goodEntries;
+  tree->SetBranchStatus("primaryVertexArray.trackArray",0);
   for (Int_t iEntry=0; iEntry<nEntries; iEntry++){
 
     //Get the ith entry and check if it passes the cuts
@@ -196,14 +201,49 @@ void skimmerAndBinner(TString inputDataFile,TString starLibrary,
     if (!IsGoodEvent(event))
       continue;
 
-    //Loop Over the Primary Vertex Array of this event
+    std::vector<int> tempVertexIndex(0);
+
+    //Loop over the primary vertex array of this event
     Int_t nPrimaryVertices = event->GetPrimaryVertexArray()->GetEntries();
     for (Int_t iPrimaryVertex=0; iPrimaryVertex<nPrimaryVertices; iPrimaryVertex++){
 
-      //Get the ith primary vertex and check if it passes the cuts
+      //Get the ith primary vertex and check if it passes the cuts 
       primaryVertex = (PrimaryVertexInfo *)event->GetPrimaryVertexArray()->At(iPrimaryVertex);
       if (!IsGoodVertex(primaryVertex))
-	continue;
+        continue;
+
+      //Fill the the tempVertexIndexVector with the index of this vertex
+      tempVertexIndex.push_back(iPrimaryVertex);
+
+    }//End Loop Over primary Vertices
+
+    //If there was at least one good primary vertex then add this event to the 
+    //vector of goodEntries
+    if (tempVertexIndex.size() > 0)
+      goodEntries.push_back(std::make_pair(iEntry,tempVertexIndex));
+
+  }//End Loop Over Events
+  //END APPLY CUTS
+  
+  
+  //--------------------------------------------------------------------------------
+  //BIN DATA: Loop Over the entries in the goodEntries vector. Bin the events in 
+  //          centrality and the tracks in rapidity and transverse mass if they
+  //          pass the track cuts.  
+  //--------------------------------------------------------------------------------
+  tree->SetBranchStatus("primaryVertexArray.trackArray",1);
+  for (std::vector<std::pair<int,std::vector<int> > >::iterator goodEntry = goodEntries.begin(); 
+       goodEntry != goodEntries.end(); ++goodEntry){
+    
+    //Get the good Entry
+    tree->GetEntry((*goodEntry).first);
+    
+    //Loop Over the Primary Vertex Array of this event
+    for (std::vector<int>::iterator iPrimaryVertex = ((*goodEntry).second).begin(); 
+	 iPrimaryVertex != ((*goodEntry).second).end(); ++iPrimaryVertex){
+      
+      //Get the ith primary vertex
+      primaryVertex = (PrimaryVertexInfo *)event->GetPrimaryVertexArray()->At((*iPrimaryVertex));
 
       //Figure out the centrality bin here
       Int_t centralityVariable = GetCentralityVariable(primaryVertex);
@@ -274,7 +314,7 @@ void skimmerAndBinner(TString inputDataFile,TString starLibrary,
       }//End Loop Over Primary Tracks
 
     }//End Loop Over Primary Vertices
-    
+
   }//End Loop Over Events/Entry
 
 
