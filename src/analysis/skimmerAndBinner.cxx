@@ -182,7 +182,7 @@ void skimmerAndBinner(TString inputDataFile,TString starLibrary,
   //If the user has passed a number of events to process then use it,
   //otherwise use all the entries in the tree
   Long64_t nEntries(0);
-  if (nEvents < 0)
+  if (nEvents > 0)
     nEntries = nEvents;
   else
     nEntries = tree->GetEntries();
