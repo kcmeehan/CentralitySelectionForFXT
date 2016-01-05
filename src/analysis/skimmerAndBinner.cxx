@@ -224,8 +224,7 @@ void skimmerAndBinner(TString inputDataFile,TString starLibrary,
 
   }//End Loop Over Events
   //END APPLY CUTS
-  
-  
+
   //--------------------------------------------------------------------------------
   //BIN DATA: Loop Over the entries in the goodEntries vector. Bin the events in 
   //          centrality and the tracks in rapidity and transverse mass if they
