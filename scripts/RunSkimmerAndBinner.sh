@@ -42,7 +42,7 @@ do
 done
 wait ${processID[@]}
 
-hadd $outputDirectory/Combined.root ${outFiles[@]}
+hadd $outputDirectory/YieldHistograms.root ${outFiles[@]}
 
 wait
 
