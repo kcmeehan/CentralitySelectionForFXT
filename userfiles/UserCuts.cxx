@@ -61,9 +61,11 @@ std::vector<int> GetCentralityCuts(){
   //Set your centrality cuts here order them from most central
   //to most peripheral.
   std::vector<int> centralityCuts;
-  centralityCuts.push_back(10); //Most Central
-  centralityCuts.push_back(7);
-  centralityCuts.push_back(4);  //Most Peripheral
+  //Most Central
+  centralityCuts.push_back(16);
+  centralityCuts.push_back(11);
+  centralityCuts.push_back(8);
+  //Most Peripheral
 
   return centralityCuts;
 
