@@ -154,6 +154,10 @@ void FitPionMinus(){
       //Pass the histogram to a local pointer
       yieldHisto = tpcPionMinusHisto.at(yIndex).at(mTm0Index);
 
+      //make sure it has enough entires
+      if (yieldHisto->GetEntries() < 100)
+	continue;
+
       //Compute the kinematics for this bin
       Double_t rapidity = GetRapidityRangeCenter(yIndex);
       Double_t mTm0 = GetmTm0RangeCenter(mTm0Index);
