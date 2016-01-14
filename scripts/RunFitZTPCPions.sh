@@ -20,7 +20,7 @@ rapidityValue=1.25
 centralityIndex=0
 
 #SET THE STARLIBRARY VERSION
-starlib=SL10h
+starlib=dev
 ######################################################
 
 root -l ../macros/RunFitZTPCPions.C\(\"$yieldHistoFile\",\"$spectraFile\",\"$starlib\",$centralityIndex,$rapidityValue,\"$imageDir\"\) #> /dev/null 2>&1 &
