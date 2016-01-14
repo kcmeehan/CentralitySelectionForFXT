@@ -2,3 +2,24 @@ This is a collection of code for use with the DavisDST file format.
 
 Initial Authors: Christopher Flores and Kathryn Meehan
 Contributors: (put your name here if you have contributed!)
+
+OVERVIEW:
+	
+
+GETTING STARTED:
+	1. Getting the Code - You can clone the DavisDSTAnalysis repository into
+	   a directory of you choice by doing:
+	   	     git clone https://chris_flores@bitbucket.org/chris_flores/davisdstanalysis.git
+           Then, get the code of the submodules by doing:
+	   	     git submodule init
+		     git submodule update
+	   If you are prompted for a password at any time during this process simply hit enter.
+	   After this completes you will have all the code.
+
+	2. Compile the Code - You can compile the code by changing directory into the 
+	   davisdstanalysis directory and doing make like the following:
+	   	     cd davisdstanalysis
+		     make 
+	   You should see output that suggests all the .cxx sources files are being compiled.
+	   When this procedure is done you will have a new directory, bin/, continaing all of 
+	   the compiled binaries.
