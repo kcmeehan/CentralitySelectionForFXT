@@ -8,6 +8,7 @@
 
 class TH1D;
 class TH3D;
+class TF1;
 class TString;
 class TGraphErrors;
 class TLine;
@@ -31,6 +32,10 @@ TH1D *GetYieldHistogram(TH3D *yieldHisto3D, Double_t rapidity, Double_t mTm0, TS
 void LoadYieldHistograms(TH3D *yieldHisto3D, std::vector<std::vector<TH1D *> > *zHistos, 
 			 TString detector="TPC", Int_t rapidityIndex=-1);
 void DefineParticlePars(ParticlePars *p, TString name);
+void AddPointToParGraph(TGraphErrors *parGraph, TF1 *fitFunc, Int_t par, Int_t mTm0Index);
+
 TLine *PredictionLine(TLine *line, Double_t prediction, Double_t height);
+
+Double_t SwooshFunc(Double_t *x, Double_t *par);
 
 #endif

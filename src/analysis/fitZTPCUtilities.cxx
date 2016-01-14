@@ -8,6 +8,7 @@
 #include <TH1D.h>
 #include <TH2D.h>
 #include <TH3D.h>
+#include <TF1.h>
 #include <TGraphErrors.h>
 #include <TLine.h>
 
@@ -110,6 +111,18 @@ void DefineParticlePars(ParticlePars *p, TString name){
 }
 
 //_______________________________________________________________________________
+void AddPointToParGraph(TGraphErrors *parGraph, TF1 *fitFunc, Int_t par, Int_t mTm0Index){
+
+  parGraph->SetPoint(parGraph->GetN(),
+		     GetmTm0RangeCenter(mTm0Index),
+		     fitFunc->GetParameter(par));
+  parGraph->SetPointError(parGraph->GetN()-1,
+			  0,
+			  fitFunc->GetParError(par));
+
+}
+
+//_______________________________________________________________________________
 TLine *PredictionLine(TLine *line, Double_t prediction, Double_t height){
 
   line->SetX1(prediction);
@@ -118,4 +131,26 @@ TLine *PredictionLine(TLine *line, Double_t prediction, Double_t height){
   line->SetY2(height);
 
   return line;
+}
+
+//_______________________________________________________________________________
+Double_t SwooshFunc(Double_t *x, Double_t *par){
+
+  Double_t xx = x[0];
+
+  //Piecewise
+  TF1 f1("f1","[0]",par[2],2);
+  f1.FixParameter(0,par[0]);
+
+  if (xx >= par[2])
+    return f1.Eval(xx);
+
+  TF1 f2("f2","[0]+[1]*(x-[2])+[3]*pow(x-[2],2)",0,par[2]);
+  f2.FixParameter(0,f1.Eval(par[2]));
+  f2.SetParameter(1,par[1]);
+  f2.FixParameter(2,par[2]);
+  f2.SetParameter(3,par[3]);
+
+  return f2.Eval(xx);
+
 }
