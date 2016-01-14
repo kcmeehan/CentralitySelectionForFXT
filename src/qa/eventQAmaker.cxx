@@ -9,6 +9,7 @@
 #include <TH3D.h>
 #include <TFile.h>
 #include <TTree.h>
+#include <TString.h>
 #include <TBranch.h>
 #include <TCanvas.h>
 #include <TClonesArray.h>
@@ -28,33 +29,28 @@
 #include "ParticleInfo.h"
 #include "UserCuts.h"
 
-using nampespace std;
+using namespace std;
 
 //_____MAIN____________________
-void eventQAmaker(TString inputDataFile, Bool_t eventCuts, Bool_t vertexCuts, Bool_t centCuts){
+void eventQAmaker(TString inputDataFile, Bool_t eventCuts){
 //This function takes your input data file and produces an output file with event qa plots 
-//with no cuts, with trigger-level cuts in your user file, with vertex-level cuts,
-//and centrality selection, or a combination. Note that no track qa plots are made-
-//you must use trackQAmaker.cxx for track qa. The purpose of this function is to
-//allow the user to optimize event cuts.
+//with no cuts or with the trigger-level cuts in your user file. Note that no vertex or
+//track qa plots are made- you must use vertexQAmaker.cxx or trackQAmaker.cxx for those.
+//The purpose of this function is to allow the user to optimize triggered-event cuts.
 
 //setting output file name
-TString outFile = "eventQA";
+TString outFileName = "eventQA";
 TString none    = "_noCuts";
 TString event   = "_eventCuts";
-TString vertex  = "_vertexCuts";
-TString cent    = "_centSelected";
 
-if((eventCuts && vertexCuts && centCuts) == false) outputFile+=none;
-if(eventCuts == true) outputFile+=event;
-if(vertexCuts == true) outputFile+=vertex;
-if(centCuts  == true) outputFile+=cent;
+if(eventCuts == false) outFileName+=none;
+else outFileName+=event;
+TFile *outFile  = new TFile(outFileName,"RECREATE");
 
 //obtaining data tree
 TFile *file     = new TFile(inputDataFile,"READ");
 TTree *tree     = (TTree *)file->Get("DataTree");
  
-TrackInfo *track = NULL;
 PrimaryVertexInfo *primaryVertex = NULL;
 EventInfo *event = NULL;
 
@@ -64,33 +60,14 @@ TH1D *htrigNoCuts = new TH1D("htrigNoCuts","Triggers",500,0,500000);
 TH1D *tofMultHistNoCuts = new TH1D("tofMultHistNoCuts","TOF Multiplicity",500,0,500);
 TH1I *hnPrimaryVerticesNoCuts = new TH1I("hnPrimaryVerticesNoCuts","Primary Vertex Distribution",20,0,20);
 
-if(eventCuts || vertexCuts || centCuts){
+if(eventCuts){
   TH1D *htrig = new TH1D("htrig","Triggers",500,0,500000);
   TH1D *tofMultHist = new TH1D("tofMultHist","TOF Multiplicity",500,0,500);
   TH1I *hnPrimaryVertices = new TH1I("hnPrimaryVertices","Primary Vertex Distribution",20,0,20);
 }
 
-if((eventCuts == true) && (vertexCuts  centCuts) == false){//initialize in no cuts case
-  TH1D *FullVzHistoNoCuts = new TH1D("FullVzHistoNoCuts","V_{z} Distribution",520,-260,260);
-  TH1D *VzHistoNoCuts = new TH1D("VzHistoNoCuts","V_{z} Distribution",500,200,225);
-  TH2D *VyVzHistoNoCuts = new TH2D("VyVzHistoNoCuts","V_{y} vs. V_{z} Distribution",500,200,225,500,-5,5);
-  TH2D *VxVyHistoNoCuts = new TH2D("VxVyHistoNoCuts","V_{y} vs. V_{x} Distribution",500,-5,5,500,-5,5);
-  TH1D *multHistoNoCuts = new TH1D("multHistoNoCuts","Multiplicity",500,0,500);
-  TH1D *ntofMatchHist = new TH1D("ntofMatchHist","Number of TOF Matches",500,0,500);
-  TH2D *TOFvsPiMultHistNoCuts = new TH2D("TOFvsPiMultHistNoCuts","Number of TOF Matches vs. Pion Multiplicity",100,0,100,50,0,50);
-} 
-
-else{//initialize in case of any cuts
-TH1D *VzHisto = new TH1D("VzHisto","V_{z} Distribution",140,208,215);
-TH2D *VyVzHisto = new TH2D("VyVzHisto","V_{y} vs. V_{z} Distribution",500,200,225,500,-5,5);
-TH2D *VxVyHisto = new TH2D("VxVyHisto","V_{y} vs. V_{x} Distribution",500,-5,5,500,-5,5);
-TH1D *multHisto = new TH1D("multHisto","Multiplicity",500,0,500);
-TH1D *piMult = new TH1D("piMult","Pion Multiplicity",200,0,200);
-}
-
-Double_t pvEntries;
 unsigned short tofMult;
-//start loop over triggers
+//start loop over triggered-events
 Double_t entries = tree->GetEntries();
 for(Int_t i=0;i<entries;i++){
   //access data and fill trigger level histograms
@@ -103,22 +80,17 @@ for(Int_t i=0;i<entries;i++){
 	}//currently we cannot access trigger ids, when this changes this code might need to be updated
   tofMultHistNoCuts->Fill(tofMult);
 	hnPrimaryVerticesNoCuts->Fill(event->nPrimaryVertices);
-	if((eventCuts || vertexCuts || centCuts) && !IsGoodEvent(event)) continue; //an event passes this only if there are no cuts OR there are cuts and that event passes those cuts
-	//NEED TO FILL POST CUT HISTOS
-	pvEntries = event->primaryVertexArray->GetEntries();
-	for(Int_t ivert=0;ivert<pvEntries;ivert++){
-    primaryVertex = (PrimaryVertexInfo *) event->primaryVertexArray->At(ivert);
-    	
-  	
-   
-  }//end loop over vertices
-
+  if(!eventCuts) continue; //if there are no event cuts we are done filling histograms
+	if(!IsGoodEvent(event)) continue; //an event passes this only if there are cuts and that event passes those cuts
+	for(int jtrig=0;jtrig<nTrig;jtrig++){
+		htrig->Fill(trigIDs.at(jtrig));
+	}
+  tofMultHist->Fill(tofMult);
+  hnPrimaryVertices->Fill(event->nprimaryVertices);
 }//end loop over triggers
 
-
-
-
-
+file->Close();
+outFile->Write();
 
 }//end of function
 
