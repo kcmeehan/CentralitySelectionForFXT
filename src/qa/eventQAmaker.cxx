@@ -93,9 +93,6 @@ for(Int_t i=0;i<entries;i++){
   hnPrimaryVertices->Fill(event->nPrimaryVertices);
 }//end loop over triggers
 
-int test = tofMultHistNoCuts->GetEntries();
-cout<<"This is a test: "<<test<<endl;
-
 file->Close();
 outFile->Write();
 
