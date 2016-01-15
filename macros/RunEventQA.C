@@ -6,9 +6,8 @@ void RunEventQA(TString inputFile, TString outputFile, Bool_t eventCuts, Int_t n
 
 		//Load the Necessary Libraries
 		gSystem->Load("../bin/TrackInfo_cxx.so");
-    gSystem->Load("../bin/PrimaryVertexInfo_cxx.so");
+		gSystem->Load("../bin/PrimaryVertexInfo_cxx.so");
     gSystem->Load("../bin/EventInfo_cxx.so");
-    gSystem->Load("../bin/ParticleInfo_cxx.so");
   
     gSystem->Load("../bin/UserCuts_cxx.so");
     gSystem->Load("../bin/eventQAmaker_cxx.so");
