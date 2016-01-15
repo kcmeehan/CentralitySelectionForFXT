@@ -31,7 +31,7 @@
 using namespace std;
 
 //_____MAIN____________________
-void eventQAmaker(TString inputDataFile, Bool_t eventCuts){
+void eventQAmaker(TString inputDataFile, Bool_t eventCuts = false, Int_t nEvents = -1){
 //This function takes your input data file and produces an output file with event qa plots 
 //with no cuts or with the trigger-level cuts in your user file. Note that no vertex or
 //track qa plots are made- you must use vertexQAmaker.cxx or trackQAmaker.cxx for those.
@@ -68,8 +68,10 @@ if(eventCuts){
 
 Int_t nTrig;
 unsigned short tofMult;
+Double_t entries;
 //start loop over triggered-events
-Double_t entries = tree->GetEntries();
+if(nEvents > 0) entries = nEvents;
+else entries = tree->GetEntries();
 for(Int_t i=0;i<entries;i++){
   //access data and fill trigger level histograms
 	tree->GetEntry(i);
