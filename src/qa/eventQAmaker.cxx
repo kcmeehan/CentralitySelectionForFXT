@@ -31,7 +31,7 @@
 using namespace std;
 
 //_____MAIN____________________
-void eventQAmaker(TString inputDataFile, Bool_t eventCuts = false, Int_t nEvents = -1){
+void eventQAmaker(TString inputDataFile, TString outFileName, Bool_t eventCuts = false, Int_t nEvents = -1){
 //This function takes your input data file and produces an output file with event qa plots 
 //with no cuts or with the trigger-level cuts in your user file. Note that no vertex or
 //track qa plots are made- you must use vertexQAmaker.cxx or trackQAmaker.cxx for those.
@@ -41,14 +41,6 @@ void eventQAmaker(TString inputDataFile, Bool_t eventCuts = false, Int_t nEvents
 TFile *file     = new TFile(inputDataFile,"READ");
 TTree *tree     = (TTree *)file->Get("DataTree");
 
-//setting output file name
-TString outFileName = "eventQA";
-TString none    = "_noCuts";
-TString cuts   = "_eventCuts";
-
-if(eventCuts == false) outFileName+=none;
-else outFileName+=cuts;
-outFileName+=".root";
 TFile *outFile  = new TFile(outFileName,"RECREATE");
 
 EventInfo *event = NULL;
@@ -61,7 +53,7 @@ TH1I *hnPrimaryVerticesNoCuts = new TH1I("hnPrimaryVerticesNoCuts","Primary Vert
 TH1D *htrig, *tofMultHist;
 TH1I *hnPrimaryVertices;
 
-if(eventCuts){
+if (eventCuts){
   htrig = new TH1D("htrig","Triggers",500,0,500000);
   tofMultHist = new TH1D("tofMultHist","TOF Multiplicity",500,0,500);
   hnPrimaryVertices = new TH1I("hnPrimaryVertices","Primary Vertex Distribution",20,0,20);

@@ -2,7 +2,7 @@
 //The source code for eventQAmaker.cxx can be found at
 //  src/qa/eventQAmaker.cxx
 
-void RunEventQA(TString inputFile, Bool_t eventCuts, Int_t nEvents){
+void RunEventQA(TString inputFile, TString outputFile, Bool_t eventCuts, Int_t nEvents){
 
 		//Load the Necessary Libraries
 		gSystem->Load("../bin/TrackInfo_cxx.so");
@@ -13,6 +13,6 @@ void RunEventQA(TString inputFile, Bool_t eventCuts, Int_t nEvents){
     gSystem->Load("../bin/UserCuts_cxx.so");
     gSystem->Load("../bin/eventQAmaker_cxx.so");
 
-    eventQAmaker(inputFile,eventCuts,nEvents);
+    eventQAmaker(inputFile,outputFile,eventCuts,nEvents);
 
 }
