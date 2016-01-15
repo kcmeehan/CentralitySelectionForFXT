@@ -37,6 +37,10 @@ void eventQAmaker(TString inputDataFile, Bool_t eventCuts = false, Int_t nEvents
 //track qa plots are made- you must use vertexQAmaker.cxx or trackQAmaker.cxx for those.
 //The purpose of this function is to allow the user to optimize triggered-event cuts.
 
+//obtaining data tree
+TFile *file     = new TFile(inputDataFile,"READ");
+TTree *tree     = (TTree *)file->Get("DataTree");
+
 //setting output file name
 TString outFileName = "eventQA";
 TString none    = "_noCuts";
@@ -44,12 +48,9 @@ TString cuts   = "_eventCuts";
 
 if(eventCuts == false) outFileName+=none;
 else outFileName+=cuts;
+outFileName+=".root";
 TFile *outFile  = new TFile(outFileName,"RECREATE");
 
-//obtaining data tree
-TFile *file     = new TFile(inputDataFile,"READ");
-TTree *tree     = (TTree *)file->Get("DataTree");
- 
 EventInfo *event = NULL;
 
 tree->FindBranch("EventInfo")->SetAddress(&event);
@@ -91,6 +92,9 @@ for(Int_t i=0;i<entries;i++){
   tofMultHist->Fill(tofMult);
   hnPrimaryVertices->Fill(event->nPrimaryVertices);
 }//end loop over triggers
+
+int test = tofMultHistNoCuts->GetEntries();
+cout<<"This is a test: "<<test<<endl;
 
 file->Close();
 outFile->Write();
