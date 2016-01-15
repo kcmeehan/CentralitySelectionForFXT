@@ -11,7 +11,7 @@ void RunEventQA(TString inputFile, Bool_t eventCuts, Int_t nEvents){
     gSystem->Load("../bin/ParticleInfo_cxx.so");
   
     gSystem->Load("../bin/UserCuts_cxx.so");
-    gSystem->Load("../bin/eventQA_cxx.so");
+    gSystem->Load("../bin/eventQAmaker_cxx.so");
 
     eventQAmaker(inputFile,eventCuts,nEvents);
 
