@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#This runs the QA macros which loads the necessary libraries
-#and then runs the QA binaries. The code is run for each root file in the data
+#This runs the EventQA.C macro which loads the necessary libraries
+#and then runs the eventQAmaker.cxx. The code is run for each root file in the data
 # directory.
 
 ###########################################################
@@ -45,11 +45,14 @@ done
 
 wait ${processID[@]}
 
+suffix=eventQA
 if $bool; then
-  hadd $outputDirectory/eventQA_eventCuts.root ${outFiles[@]}
+  suffix=$suffix"_vertexCuts"
 else
-  hadd $outputDirectory/eventQA_noCuts.root ${outFiles[@]}
+  suffix=$suffix"_noCuts"
 fi
+
+hadd $outputDirectory/$suffix.root ${outFiles[@]}
 
 wait
 
