@@ -22,10 +22,9 @@
 #include <TVector3.h>
 #include <TMath.h>
 
-//after- verify that you need all these classes
-#include "TrackInfo/TrackInfo.h"
-#include "PrimaryVertexInfo/PrimaryVertexInfo.h"
-#include "EventInfo/EventInfo.h"
+#include "../submodules/datacollectorreaderlibs/TrackInfo/TrackInfo.h"
+#include "../submodules/datacollectorreaderlibs/PrimaryVertexInfo/PrimaryVertexInfo.h"
+#include "../submodules/datacollectorreaderlibs/EventInfo/EventInfo.h"
 #include "ParticleInfo.h"
 #include "UserCuts.h"
 
@@ -41,17 +40,16 @@ void eventQAmaker(TString inputDataFile, Bool_t eventCuts){
 //setting output file name
 TString outFileName = "eventQA";
 TString none    = "_noCuts";
-TString event   = "_eventCuts";
+TString cuts   = "_eventCuts";
 
 if(eventCuts == false) outFileName+=none;
-else outFileName+=event;
+else outFileName+=cuts;
 TFile *outFile  = new TFile(outFileName,"RECREATE");
 
 //obtaining data tree
 TFile *file     = new TFile(inputDataFile,"READ");
 TTree *tree     = (TTree *)file->Get("DataTree");
  
-PrimaryVertexInfo *primaryVertex = NULL;
 EventInfo *event = NULL;
 
 tree->FindBranch("EventInfo")->SetAddress(&event);
@@ -59,13 +57,16 @@ tree->FindBranch("EventInfo")->SetAddress(&event);
 TH1D *htrigNoCuts = new TH1D("htrigNoCuts","Triggers",500,0,500000);
 TH1D *tofMultHistNoCuts = new TH1D("tofMultHistNoCuts","TOF Multiplicity",500,0,500);
 TH1I *hnPrimaryVerticesNoCuts = new TH1I("hnPrimaryVerticesNoCuts","Primary Vertex Distribution",20,0,20);
+TH1D *htrig, *tofMultHist;
+TH1I *hnPrimaryVertices;
 
 if(eventCuts){
-  TH1D *htrig = new TH1D("htrig","Triggers",500,0,500000);
-  TH1D *tofMultHist = new TH1D("tofMultHist","TOF Multiplicity",500,0,500);
-  TH1I *hnPrimaryVertices = new TH1I("hnPrimaryVertices","Primary Vertex Distribution",20,0,20);
+  htrig = new TH1D("htrig","Triggers",500,0,500000);
+  tofMultHist = new TH1D("tofMultHist","TOF Multiplicity",500,0,500);
+  hnPrimaryVertices = new TH1I("hnPrimaryVertices","Primary Vertex Distribution",20,0,20);
 }
 
+Int_t nTrig;
 unsigned short tofMult;
 //start loop over triggered-events
 Double_t entries = tree->GetEntries();
@@ -86,7 +87,7 @@ for(Int_t i=0;i<entries;i++){
 		htrig->Fill(trigIDs.at(jtrig));
 	}
   tofMultHist->Fill(tofMult);
-  hnPrimaryVertices->Fill(event->nprimaryVertices);
+  hnPrimaryVertices->Fill(event->nPrimaryVertices);
 }//end loop over triggers
 
 file->Close();
