@@ -37,7 +37,7 @@ do
  
     outFiles+=($outFile)
 
-    root -l -q -b ../macros/RunEventQA.C\(\"$i\",\"$outFile\",$boolVert,$nEvents\) 
+    root -l -q -b ../macros/RunVertexQA.C\(\"$i\",\"$outFile\",$boolVert,$nEvents\) 
 
     processID+=($!)
     echo ${processID[@]}
