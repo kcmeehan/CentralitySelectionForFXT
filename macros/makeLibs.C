@@ -39,5 +39,6 @@ void makeLibs(TString opt=""){
   gSystem->CompileMacro("src/analysis/centralityVariableDistributions.cxx","k");
   gSystem->CompileMacro("src/analysis/skimmerAndBinner.cxx","k");
 	gSystem->CompileMacro("src/qa/eventQAmaker.cxx","k");
+	gSystem->CompileMacro("src/qa/vertexQAmaker.cxx","k");
 
 }

@@ -22,9 +22,9 @@
 #include <TMath.h>
 
 //after- verify that you need all these classes
-#include "TrackInfo/TrackInfo.h"
-#include "PrimaryVertexInfo/PrimaryVertexInfo.h"
-#include "EventInfo/EventInfo.h"
+#include "../submodules/datacollectorreaderlibs/TrackInfo/TrackInfo.h"
+#include "../submodules/datacollectorreaderlibs/PrimaryVertexInfo/PrimaryVertexInfo.h"
+#include "../submodules/datacollectorreaderlibs/EventInfo/EventInfo.h"
 #include "ParticleInfo.h"
 #include "UserCuts.h"
 
@@ -40,7 +40,7 @@ void vertexQAmaker(TString inputDataFile, TString outputFile, Bool_t vertexCuts 
 TFile *file     = new TFile(inputDataFile,"READ");
 TTree *tree     = (TTree *)file->Get("DataTree");
 
-TFile *outFile  = new TFile(outFileName,"RECREATE");
+TFile *outFile  = new TFile(outputFile,"RECREATE");
 
 TrackInfo *track = NULL;
 PrimaryVertexInfo *primaryVertex = NULL;
@@ -69,10 +69,11 @@ if (vertexCuts){
   TOFvsPiMultHist = new TH2D("TOFvsPiMultHist","Number of TOF Matches vs. Pion Multiplicity",100,0,100,50,0,50);
 }
 
-Double_t x(0),y(0),z(0);
-Double_t refMultUser(0);
-Int_t nPions, newNtof;
-Double_t entries = tree->GetEntries();
+Double_t x(0), y(0), z(0), refMultUser(0);
+Int_t nPions, newNtof, pvEntries;
+Double_t entries;
+if(nEvents > 0) entries = nEvents;
+else entries = tree->GetEntries();
 for(Int_t i=0; i<entries; i++){//loop over triggers
   tree->GetEntry(i);
 	if (!IsGoodEvent(event)) continue;
@@ -95,7 +96,7 @@ for(Int_t i=0; i<entries; i++){//loop over triggers
     //track loop to calculate variables for event cuts
 		for(Int_t k = 0; k<primaryVertex->trackArray->GetEntries();k++){
 		  track = (TrackInfo *)primaryVertex->trackArray->At(k);
-			if (!IsGoodTrack(track)) continue
+			if (!IsGoodTrack(track)) continue;
 		  if (track->tofMatchFlag > 0) newNtof = newNtof + 1;
 		  Double_t q = track->charge;
 		  Double_t nSigmaPi = track->nSigmaPion;
