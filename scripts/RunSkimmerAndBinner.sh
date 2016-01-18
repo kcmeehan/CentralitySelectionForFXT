@@ -7,16 +7,16 @@
 ###########################################################
 #SET THE DATA DIRECTORY HERE
 #dataDirectory=/scratch_rigel/FixedTargetData/AuAl_DavisDSTs/AuAl_3_0_2010/
-dataDirectory=/scratch_ssdMenkar/cflores/testData/
+dataDirectory=/home/chris/Documents/DavisDSTs/AuAu_4_5_2015/
 
 #SET THE OUTPUT DIRECTORY HERE
-outputDirectory=../userfiles/AuAl_3_0/
+outputDirectory=../userfiles/AuAu_4_5_2015/
 
 #SET THE NUMBER OF EVENTS HERE (USE -1 FOR ALL)
 nEvents=-1 #1000
 
 #SET THE STAR LIBRARY VERSION
-starlib=SL10h
+starlib=dev
 
 ########################################################### 
 
