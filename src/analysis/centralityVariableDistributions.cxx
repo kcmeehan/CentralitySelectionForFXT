@@ -21,7 +21,7 @@ void centralityVariableDistributions(TString inputDataFile, Long64_t nEvents=-1,
 
 
   //Create Pointers needed for reading the tree
-  //  TrackInfo *track = NULL;
+  TrackInfo *track = NULL;
   PrimaryVertexInfo *primaryVertex = NULL;
   EventInfo *event = NULL;
 
@@ -37,6 +37,7 @@ void centralityVariableDistributions(TString inputDataFile, Long64_t nEvents=-1,
 
   //Create Histograms for the centrality variables
   TH1D *nPionsHisto = new TH1D("nPionHisto","Number of Pions",1000,0,1000);
+  TH1D *nGoodHisto = new TH1D("nGoodTracks","Number of Tracks that Pass Track Quality Cuts",1000,0,1000);
   TH1D *nPrimaryHisto = new TH1D("nPrimaryHisto","Number of Primary Tracks",1000,0,1000);
 
   //If the user has passed a number of events to process then use it,
@@ -47,7 +48,6 @@ void centralityVariableDistributions(TString inputDataFile, Long64_t nEvents=-1,
   else
     nEntries = tree->GetEntries();
 
-  tree->SetBranchStatus("primaryVertexArray.trackArray",0);
   for (Int_t iEntry=0; iEntry<nEntries; iEntry++){
 
     //Get the ith entry and check if it passes the cuts
@@ -64,15 +64,44 @@ void centralityVariableDistributions(TString inputDataFile, Long64_t nEvents=-1,
       if (!IsGoodVertex(primaryVertex))
         continue;
 
-      //Fill the Centrality Variable Histograms
-      nPionsHisto->Fill(primaryVertex->GetNPions());
-      nPrimaryHisto->Fill(primaryVertex->GetNPrimaryTracks());
+      Double_t pionMult(0), totalMult(0);
+      
+      //Loop Over the Primary Tracks associated with this primary vertex
+      Int_t nPrimaryTracks = primaryVertex->trackArray->GetEntries();
+      for (Int_t iPrimaryTrack=0; iPrimaryTrack<nPrimaryTracks; iPrimaryTrack++){
 
+	//Get the ith primary track and check if it is good
+	track = (TrackInfo *)primaryVertex->trackArray->At(iPrimaryTrack);
+	if (!IsGoodTrack(track))
+	  continue;
+
+	//Increment count of total multiplicity
+	totalMult++;
+
+	//Increment count of pion mutltiplicity
+	if (fabs(track->GetNSigmaPion()) < 2.0){
+	  
+	  if (track->GetCharge() < 0)
+	    pionMult++;
+	  else if (track->GetNSigmaProton() < -1.0){
+	    pionMult++;
+	  }
+	  
+	}	
+	
+      }//End Loop Over iPrimary Track
+      
+      //Fill the Centrality Variable Histograms
+      nPionsHisto->Fill(pionMult);
+      nGoodHisto->Fill(totalMult);
+      nPrimaryHisto->Fill(primaryVertex->GetNPrimaryTracks());
+      
     }//End Loop Over primary Vertices      
 
   }//End Loop Over tree Entries
 
   nPionsHisto->Write();
+  nGoodHisto->Write();
   nPrimaryHisto->Write();
   outFile->Close();
 
