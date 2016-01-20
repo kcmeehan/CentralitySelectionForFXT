@@ -26,7 +26,7 @@ numberOfFiles=${#dataFiles[@]}
 outFiles=()
 #i=$dataDirectory
 #i+=$dataFiles
-bool=false
+bool=true
 
 for i in ${dataFiles[@]}
 do
@@ -47,7 +47,7 @@ wait ${processID[@]}
 
 suffix=eventQA
 if $bool; then
-  suffix=$suffix"_vertexCuts"
+  suffix=$suffix"_eventCuts"
 else
   suffix=$suffix"_noCuts"
 fi
