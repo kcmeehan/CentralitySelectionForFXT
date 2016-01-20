@@ -1,6 +1,6 @@
-//This macro runs the compiled eventQAmaker binary.
-//The source code for eventQAmaker.cxx can be found at
-//  src/qa/eventQAmaker.cxx
+//This macro runs the compiled vertexQAmaker binary.
+//The source code for vertexQAmaker.cxx can be found at
+//  src/qa/vertexQAmaker.cxx
 
 void RunVertexQA(TString inputFile, TString outputFile, Bool_t vertexCuts, Int_t nEvents){
 
