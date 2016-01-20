@@ -47,14 +47,14 @@ EventInfo *event = NULL;
 
 tree->FindBranch("EventInfo")->SetAddress(&event);
 //initializing trigger level histograms
-TH1D *htrigNoCuts = new TH1D("htrigNoCuts","Triggers",500,0,500000);
+TH1D *htrigNoCuts = new TH1D("htrigNoCuts","Triggers",100,0,100);
 TH1D *tofMultHistNoCuts = new TH1D("tofMultHistNoCuts","TOF Multiplicity",500,0,500);
 TH1I *hnPrimaryVerticesNoCuts = new TH1I("hnPrimaryVerticesNoCuts","Primary Vertex Distribution",20,0,20);
 TH1D *htrig, *tofMultHist;
 TH1I *hnPrimaryVertices;
 
 if (eventCuts){
-  htrig = new TH1D("htrig","Triggers",500,0,500000);
+  htrig = new TH1D("htrig","Triggers",100,0,100);
   tofMultHist = new TH1D("tofMultHist","TOF Multiplicity",500,0,500);
   hnPrimaryVertices = new TH1I("hnPrimaryVertices","Primary Vertex Distribution",20,0,20);
 }
