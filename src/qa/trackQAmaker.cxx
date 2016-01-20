@@ -118,8 +118,9 @@ TH1D *hnHitsPoss5 = new TH1D("hnHitsPoss5","nHitsPoss -1.5 < #eta < -1.2",60,0,6
 TH1D *hnHitsPoss6 = new TH1D("hnHitsPoss6","nHitsPoss -1.8 < #eta < -1.5",60,0,60);
 
 
-Double_t x(0), y(0), z(0), refMultUser(0);
-Int_t nPions, newNtof, pvEntries;
+Int_t pvEntries;
+double mPion = 0.13957018;
+double mProton = 0.938272046;
 Double_t entries;
 if(nEvents > 0) entries = nEvents;
 else entries = tree->GetEntries();
@@ -139,11 +140,13 @@ for(Int_t i=0; i<entries; i++){//loop over triggers
 				Double_t nHitsFit = track->nHitsFit;
 			  Double_t nHitsPoss = track->nHitsPoss;
 				Double_t nHitsRatio = nHitsFit/nHitsPoss;
+				
         hnHits->Fill(track->nHits);
         hnHitsFit->Fill(nHitsFit);
         hnHitsPoss->Fill(nHitsPoss);
         hnHitsRat->Fill(nHitsRatio);
         hnHitsdEdx->Fill(track->dEdxHits);         
+
         Double_t firstHitx = track->firstPoint.x();
         Double_t firstHity = track->firstPoint.y();
         Double_t firstHitz = track->firstPoint.z();
@@ -152,8 +155,14 @@ for(Int_t i=0; i<entries; i++){//loop over triggers
         Double_t lastHitz = track->lastPoint.z();
         Double_t dcaD = track->globalDCA.Mag();
         Double_t rLastHit = sqrt(lastHitx*lastHitx + lastHity*lastHity);
+        Double_t eta=track->eta;
+        Double_t phi=track->phi;
+        Double_t length = track->length;
+
+        nRatVsEta->Fill(eta,nHitsRatio);
         hphir->Fill(rLastHit,phi);
         hdca->Fill(dcaD);
+        hdcaEta->Fill(eta,dcaD);
         firstZ->Fill(firstHitz);
         lastZ->Fill(lastHitz);
         firstXY->Fill(firstHitx,firstHity); 
@@ -166,26 +175,18 @@ for(Int_t i=0; i<entries; i++){//loop over triggers
           firstXYeast->Fill(firstHitx,firstHity);
         }
         firstZvsDCA->Fill(firstHitz,dcaD);
+        hTrackLength->Fill(length);
+        lengthVsEta->Fill(eta,length);
 
-        //kinematic variables
-        Double_t eta=track->eta;
-        Double_t phi=track->phi;
+        //pid variables and acceptance plots 
         Double_t q = track->charge;
         Double_t pT = track->pT;
         Double_t p = sqrt(pow(pT,2) + pow(track->pZ,2));
-        Double_t length = track->length;
-        hdcaEta->Fill(eta,dcaD);
-        hTrackLength->Fill(length);
-        lengthVsEta->Fill(eta,length);
-        nRatVsEta->Fill(eta,nHitsRatio);
-
-        //pid variables and acceptance plots 
-        Double_t dEdx = track->dEdx*1000000;
+        Double_t dEdx = track->dEdxFit*1000000;
         Double_t nSigmaPi = track->nSigmaPion;
         Double_t nSigmaPro = track->nSigmaProton;
         Double_t yPi = TMath::ATanH(track->pZ / sqrt(mPion*mPion + p*p));
         Double_t yPro = TMath::ATanH(track->pZ / sqrt(mProton*mProton + p*p));
-        Double_t mT = sqrt(mPion*mPion + pT*pT);
         Double_t mTpro = sqrt(mProton*mProton + pT*pT);
         if(q < 0 && abs(nSigmaPi) < 2) pimAccept->Fill(yPi,pT);
         if(q > 0 && abs(nSigmaPi) < 2 && nSigmaPro < -1) pipAccept->Fill(yPi,pT);
@@ -218,37 +219,37 @@ for(Int_t i=0; i<entries; i++){//loop over triggers
         
         //rapidity binning 
         if(eta < 0 && eta > -0.3){
-          hdEdx1->Fill(q*p,track->dEdx*1000000);
+          hdEdx1->Fill(q*p,track->dEdxFit*1000000);
           hnHitsRat1->Fill(nHitsRatio);
           hnHitsFit1->Fill(nHitsFit);
           hnHitsPoss1->Fill(nHitsPoss);
         }
         if(eta < -0.3 && eta > -0.6){
-          hdEdx2->Fill(q*p,track->dEdx*1000000);
+          hdEdx2->Fill(q*p,track->dEdxFit*1000000);
           hnHitsRat2->Fill(nHitsRatio);
           hnHitsFit2->Fill(nHitsFit);
           hnHitsPoss2->Fill(nHitsPoss);
         }
         if(eta < -0.6 && eta > -0.9){
-          hdEdx3->Fill(p*q,track->dEdx*1000000);
+          hdEdx3->Fill(p*q,track->dEdxFit*1000000);
           hnHitsRat3->Fill(nHitsRatio);
           hnHitsFit3->Fill(nHitsFit);
           hnHitsPoss3->Fill(nHitsPoss);
         }
         if(eta < -0.9 && eta > -1.2){
-          hdEdx4->Fill(p*q,track->dEdx*1000000);
+          hdEdx4->Fill(p*q,track->dEdxFit*1000000);
           hnHitsRat4->Fill(nHitsRatio);
           hnHitsFit4->Fill(nHitsFit);
           hnHitsPoss4->Fill(nHitsPoss);
         }
         if(eta < -1.2 && eta > -1.5){
-         hdEdx5->Fill(p*q,track->dEdx*1000000);
+         hdEdx5->Fill(p*q,track->dEdxFit*1000000);
          hnHitsRat5->Fill(nHitsRatio);
          hnHitsFit5->Fill(nHitsFit);
          hnHitsPoss5->Fill(nHitsPoss);
         }
         if(eta < -1.5 && eta > -1.8){
-          hdEdx6->Fill(p*q,track->dEdx*1000000);
+          hdEdx6->Fill(p*q,track->dEdxFit*1000000);
           hnHitsRat6->Fill(nHitsRatio);
           hnHitsFit6->Fill(nHitsFit);
           hnHitsPoss6->Fill(nHitsPoss);
