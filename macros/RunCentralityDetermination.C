@@ -100,7 +100,8 @@ void RunCentralityDetermination(TString DATAFILE, TString DATAHISTO,
     
   }//End Loop Over Centrality Bins
 
-
-
+  //Save the Data Histo to the output file                                                                    
+  outFile->cd();
+  dataHisto->Write();
   
 }
