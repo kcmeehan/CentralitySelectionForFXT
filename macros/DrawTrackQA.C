@@ -24,7 +24,7 @@
 
 using namespace std;
 
-void DrawTrackQA(TString inputFile, Bool_t extended, Bool_t rapBinned){
+void DrawTrackQA(TString inputFile, Bool_t extended=false, Bool_t rapBinned=false, Double_t yMid){
 
 //make plots pretty
   gStyle->SetPalette(1,0);
