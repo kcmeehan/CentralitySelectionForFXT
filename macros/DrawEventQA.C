@@ -21,7 +21,6 @@
 #include <TAttLine.h>
 #include <TLegend.h>
 #include <TStyle.h>
-#include "../src/submodules/datacollectorreaderlibs/EventInfo/EventInfo.h"
 
 using namespace std;
 
