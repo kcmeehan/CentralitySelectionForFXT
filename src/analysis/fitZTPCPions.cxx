@@ -493,7 +493,7 @@ void FitPionMinus(){
       electron->widthFit[yIndex]->SetParLimits(3,.0,3);
 
       //Get the Maximum mTm0 from the graph and use it as a bound on the parameter
-      Double_t max = electron->width[yIndex]->GetX()[electron->width[yIndex]->GetN()-1];
+      max = electron->width[yIndex]->GetX()[electron->width[yIndex]->GetN()-1];
       electron->widthFit[yIndex]->SetParLimits(2,.1,max);
     }
     else{
@@ -851,7 +851,7 @@ void FitPionPlus(){
 
       //Fit Range
       Double_t min = FindMinBinCenter(yieldHisto,pionPredict-.5,pionPredict);
-      Double_t max = TMath::Max(protonPredict,electronPredict);
+      max = TMath::Max(protonPredict,electronPredict);
       max = FindMinBinCenter(yieldHisto,max,max+.5);
 
       //The final fit depends on the status of the electron
