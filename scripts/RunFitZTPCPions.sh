@@ -14,8 +14,8 @@ spectraFile=/home/chris/Documents/davisdstanalysis/userfiles/AuAu_4_5_2015/Spect
 imageDir=/home/chris/Documents/davisdstanalysis/userfiles/AuAu_4_5_2015/Images/
 
 #SET THE RAPIDITY VALUE (USE -999 FOR ALL)
-#rapidityValue=-1.5
-rapidityValue=-999
+rapidityValue=-1.5
+#rapidityValue=-999
 #SET THE CENTRALITY BIN INDEX (USE -1 FOR ALL)
 centralityIndex=0
 

@@ -1039,36 +1039,27 @@ Bool_t AddPointToSpectra(TH1D *yieldHisto, TF1 *yieldFit, TGraphErrors *rawSpect
 
   //Get the Stats Box and Set its attributes
   TPaveStats *statsBox = (TPaveStats*)yieldHisto->FindObject("stats");
-  if (PID == 1){
-    statsBox->SetX1NDC(.7);
-    statsBox->SetY1NDC(.50);
-    statsBox->SetX2NDC(.97);
-    statsBox->SetY2NDC(.93);
-  }
-  else {
-    statsBox->SetX1NDC(.14);
-    statsBox->SetY1NDC(.12);
-    statsBox->SetX2NDC(.37);
-    statsBox->SetY2NDC(.78);
-  }
+
+  
+  statsBox->SetX1NDC(.14);
+  statsBox->SetY1NDC(.12);
+  statsBox->SetX2NDC(.37);
+  statsBox->SetY2NDC(.78);
+  
   gPad->Update();
   
   //Make A Legend
   TLegend leg;
   leg.SetOption("brNDC");
-  if (parSwitch){
-    leg.SetX1NDC(.65);
-    leg.SetY1NDC(.89);
-    leg.SetX2NDC(.92);
-    leg.SetY2NDC(.94);
-  }
-  else {
-    leg.SetX1NDC(.15);
-    leg.SetY1NDC(.5);
-    leg.SetX2NDC(.22);
-    leg.SetY2NDC(.75);
-  }
-  leg.SetNColumns(parSwitch ? 5 : 1);
+  
+  leg.SetX1NDC(.65);
+  leg.SetY1NDC(.89);
+  leg.SetX2NDC(.92);
+  leg.SetY2NDC(.94);
+
+  leg.SetTextSize(.035);
+  leg.SetNColumns(5);
+  //leg.SetNColumns(parSwitch ? 5 : 1);
   leg.AddEntry(yieldFit,"Fit","L");
   leg.AddEntry("pion","#pi","L");
   if (!killElectron)
