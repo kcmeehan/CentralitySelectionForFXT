@@ -98,10 +98,18 @@ void fitZTPCPions(TString ZTPCFILE, TString SPECTRAFILE, TString STARLIB, Int_t 
   centralityIndex = CENTRALITYINDEX;
 
   killElectron = false;
-  
+
   //Create the Particle Info Object which has all the Bichesl Curves
   particleInfo = new ParticleInfo(STARLIB,true);
 
+  //Create the Output file and its directory structure
+  TFile *outFile = new TFile(SPECTRAFILE,"RECREATE");
+  if (SAVEOBJ){
+    outFile->mkdir(Form("RawSpectra_%s",particleInfo->GetParticleName(PION,-1).Data()));
+    outFile->mkdir(Form("RawSpectra_%s",particleInfo->GetParticleName(PION,1).Data()));
+    outFile->mkdir("FitParameterizations");
+  }
+  
   //Create the Particle Parameterization Objects
   pion = new ParticlePars();
   kaon = new ParticlePars();
@@ -168,12 +176,11 @@ void fitZTPCPions(TString ZTPCFILE, TString SPECTRAFILE, TString STARLIB, Int_t 
 	rawSpectraMinus.at(yIndex) = new TGraphErrors();
 	rawSpectraMinus.at(yIndex)->SetMarkerStyle(20);
 	rawSpectraMinus.at(yIndex)->SetName(Form("rawSpectra_%s_Cent%02d_yIndex_%02d",
-				 particleInfo->GetParticleName(PION,-1),
-				 centralityIndex,yIndex));
-	//rawSpectra->SetTitle(Form(""));
+						 particleInfo->GetParticleName(PION,-1).Data(),
+						 centralityIndex,yIndex));
       }
 
-      
+      //Add the yield from this mT-m0 bin to the spectrum
       Bool_t success = AddPointToSpectra(tpcPionMinusHisto.at(yIndex).at(mTm0Index),
 					 tpcPionMinusFit.at(yIndex).at(mTm0Index),
 					 rawSpectraMinus.at(yIndex),
@@ -181,6 +188,13 @@ void fitZTPCPions(TString ZTPCFILE, TString SPECTRAFILE, TString STARLIB, Int_t 
 
       
     }//End Loop Over mTm0Index
+
+    //Save the Spectra
+    if (rawSpectraMinus.at(yIndex)->GetN() > 3 && SAVEOBJ){
+      outFile->cd();
+      outFile->cd(Form("RawSpectra_%s",particleInfo->GetParticleName(PION,-1).Data()));
+      rawSpectraMinus.at(yIndex)->Write();
+    }
     
   }//End Loop Over yIndex
 
@@ -202,20 +216,43 @@ void fitZTPCPions(TString ZTPCFILE, TString SPECTRAFILE, TString STARLIB, Int_t 
 	rawSpectraPlus.at(yIndex) = new TGraphErrors();
 	rawSpectraPlus.at(yIndex)->SetMarkerStyle(20);
 	rawSpectraPlus.at(yIndex)->SetName(Form("rawSpectra_%s_Cent%02d_yIndex_%02d",
-						 particleInfo->GetParticleName(PION,1),
-						 centralityIndex,yIndex));
-	//rawSpectra->SetTitle(Form(""));
+						particleInfo->GetParticleName(PION,1).Data(),
+						centralityIndex,yIndex));
+	
       }
       
       
       Bool_t success = AddPointToSpectra(tpcPionPlusHisto.at(yIndex).at(mTm0Index),
 					 tpcPionPlusFit.at(yIndex).at(mTm0Index),
 					 rawSpectraPlus.at(yIndex),
-					 yIndex,mTm0Index,PION,-1,IMAGEDIR);
+					 yIndex,mTm0Index,PION,1,IMAGEDIR);
       
       
     }//End Loop Over mTm0Index
 
+    //Save the Spectra
+    if (rawSpectraPlus.at(yIndex)->GetN() > 3 && SAVEOBJ){
+      outFile->cd();
+      outFile->cd(Form("RawSpectra_%s",particleInfo->GetParticleName(PION,1).Data()));
+      rawSpectraPlus.at(yIndex)->Write();
+    }
+
+
+    //Save the Parameterizations
+    if (SAVEOBJ){
+      outFile->cd();
+      outFile->cd("FitParameterizations");
+      pion->mean[yIndex]->Write();
+      pion->width[yIndex]->Write();
+      electron->amp[yIndex]->Write();
+      electron->mean[yIndex]->Write();
+      electron->width[yIndex]->Write();
+      proton->amp[yIndex]->Write();
+      proton->mean[yIndex]->Write();
+      proton->width[yIndex]->Write();      
+
+    }
+    
   }//End Loop Over yIndex
   
 }
@@ -736,7 +773,14 @@ void FitPionPlus(){
       
     }//End Loop Over mTm0 ROUND 1
 
-    //Fit the Proton Mean and Width
+    //Check if the proton parameters can be parameterized
+    if (proton->mean[yIndex]->GetN() < 5){
+      cout <<"INFO: fitZTPCPions() - Insufficient data to parameterize protons: yIndex="
+	   <<yIndex <<" rapidity=" <<rapidity <<" Skipping this bin.\n";
+      continue;
+    }
+    
+    //Fit the Proton Mean and Width if the graphs have points
     proton->meanFit[yIndex] = new TF1(Form("proton_MeanFit_%02d",yIndex),
 				      particleInfo,&ParticleInfo::ConfoundMeanFitTPC,.03,1.0,6);
     proton->meanFit[yIndex]->FixParameter(0,PION);
@@ -747,21 +791,22 @@ void FitPionPlus(){
     proton->meanFit[yIndex]->SetParameter(5,1);
     proton->meanFit[yIndex]->SetParLimits(4,.5,1.5);
     proton->meanFit[yIndex]->SetParLimits(5,.6,1.2);
-
+    
     proton->widthFit[yIndex] = new TF1(Form("proton_WidthFit_%02d",yIndex),
 				       SwooshFunc,.05,1.0,4);
     proton->widthFit[yIndex]->SetParameters(.2,.5,.3,.1);
     proton->widthFit[yIndex]->SetParLimits(3,.0,3);
-
+    
     Double_t max = proton->width[yIndex]->GetX()[proton->width[yIndex]->GetN()-1];
     proton->widthFit[yIndex]->SetParLimits(2,.1,max);
-
+    
     fitParCanvas->cd(8);
     proton->mean[yIndex]->Fit(proton->meanFit[yIndex],"RQ");
     fitParCanvas->cd(9);
     proton->width[yIndex]->Fit(proton->widthFit[yIndex],"RQ");
     fitParCanvas->Update();
-
+  
+    
     //----- ROUND - Final Fitting
     for (Int_t mTm0Index=2; mTm0Index<nmTm0Bins; mTm0Index++){
       
@@ -816,7 +861,16 @@ void FitPionPlus(){
 			      "p_{Amp.}","#mu_{p}","#sigma_{p}");
 	
 	//Electron Parameters
-	yieldFit->FixParameter(3,electron->amp[yIndex]->Eval(mTm0));
+	if (fabs(electron->meanFit[yIndex]->Eval(mTm0) - pion->mean[yIndex]->Eval(mTm0)) <
+	    (electron->widthFit[yIndex]->Eval(mTm0)+pion->widthFit[yIndex]->Eval(mTm0)) ||
+	    fabs(electron->meanFit[yIndex]->Eval(mTm0) - proton->meanFit[yIndex]->Eval(mTm0)) <
+	    (electron->widthFit[yIndex]->Eval(mTm0)+proton->widthFit[yIndex]->Eval(mTm0)))
+	  yieldFit->FixParameter(3,electron->amp[yIndex]->Eval(mTm0));
+	else
+	  yieldFit->SetParameter(3,
+				 yieldHisto->GetBinContent(yieldHisto->
+							   FindBin(electron->
+								   meanFit[yIndex]->Eval(mTm0))));
 	yieldFit->FixParameter(4,electron->meanFit[yIndex]->Eval(mTm0));
 	yieldFit->FixParameter(5,electron->widthFit[yIndex]->Eval(mTm0));
 	
@@ -999,7 +1053,7 @@ Bool_t AddPointToSpectra(TH1D *yieldHisto, TF1 *yieldFit, TGraphErrors *rawSpect
   if (parSwitch){
     leg.SetX1NDC(.65);
     leg.SetY1NDC(.89);
-    leg.SetX2NDC(.95);
+    leg.SetX2NDC(.92);
     leg.SetY2NDC(.94);
   }
   else {
@@ -1051,8 +1105,6 @@ Bool_t AddPointToSpectra(TH1D *yieldHisto, TF1 *yieldFit, TGraphErrors *rawSpect
     return false;
   }
 
-
-
   //Add Point to Spectrum
   rawSpectra->SetPoint(rawSpectra->GetN(),GetmTm0RangeCenter(mTm0Index),rawYield);
   rawSpectra->SetPointError(rawSpectra->GetN()-1,0,rawYieldError);
@@ -1062,6 +1114,17 @@ Bool_t AddPointToSpectra(TH1D *yieldHisto, TF1 *yieldFit, TGraphErrors *rawSpect
   rawSpectra->Draw("APZ");
   spectraCanvas->Update();
 
+  //Save the Fit Image
+  if (SAVEIMG){
+    TString fullImageDir = IMAGEDIR+"/"+particleInfo->GetParticleName(PID,CHARGE);
+    TString imageName = TString::Format("zTPCFit_%s_%02d_%02d_%02d",
+					particleInfo->GetParticleName(PID,CHARGE).Data(),
+					centralityIndex,yIndex,mTm0Index);
+    
+    fittingCanvas->SaveAs(Form("%s/%s.eps",fullImageDir.Data(),imageName.Data()));
+    
+  }
+  
   return true;
 
 }
