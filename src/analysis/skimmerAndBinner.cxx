@@ -14,6 +14,7 @@
 #include <TH3D.h>
 #include <TMath.h>
 
+#include "globalDefinitions.h"
 #include "TrackInfo.h"
 #include "PrimaryVertexInfo.h"
 #include "EventInfo.h"
@@ -23,16 +24,6 @@
 //___MAIN___________________________
 void skimmerAndBinner(TString inputDataFile,TString starLibrary, 
 		      Long64_t nEvents=-1, TString outputFile=""){
-
-  const double rapidityMin = -2.05;
-  const double rapidityMax = 2.05;
-  const double rapidityBinWidth = 0.1;
-  const int nRapidityBins = TMath::Nint( fabs(rapidityMax-rapidityMin) / rapidityBinWidth );
-
-  const double mTm0Min = 0.0;
-  const double mTm0Max = 2.0;
-  const double mTm0BinWidth = 0.025;
-  const int nmTm0Bins = TMath::Nint( fabs(mTm0Min-mTm0Max) / mTm0BinWidth );
 
   //Create Pointers needed for reading the tree
   TrackInfo *track = NULL;
@@ -164,13 +155,13 @@ void skimmerAndBinner(TString inputDataFile,TString starLibrary,
                       particleSymbolPlus,iCentBin,particleSymbolPlus,particleSymbolPlus));
 
       TPCTracksMinus.at(iParticle).at(iCentBin)->
-	SetName(Form("nTPCTracks_%s_Cent%d",particleInfo->GetParticleName(iParticle,1).Data(),iCentBin));
+	SetName(Form("nTPCTracks_%s_Cent%d",particleInfo->GetParticleName(iParticle,-1).Data(),iCentBin));
       TPCTracksMinus.at(iParticle).at(iCentBin)->
 	SetTitle(Form("n TPC Tracks for %s Centrality Bin: %d;y_{%s};m_{T}-m_{%s} (GeV/c^{2})",
                       particleSymbolMinus,iCentBin,particleSymbolMinus,particleSymbolMinus));
 
       TOFTracksMinus.at(iParticle).at(iCentBin)->
-        SetName(Form("nTOFTracks_%s_Cent%d",particleInfo->GetParticleName(iParticle,1).Data(),iCentBin));
+        SetName(Form("nTOFTracks_%s_Cent%d",particleInfo->GetParticleName(iParticle,-1).Data(),iCentBin));
       TOFTracksMinus.at(iParticle).at(iCentBin)->
         SetTitle(Form("n TOF Tracks for %s Centrality Bin: %d;y_{%s};m_{T}-m_{%s} (GeV/c^{2})",
                       particleSymbolMinus,iCentBin,particleSymbolMinus,particleSymbolMinus));

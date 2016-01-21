@@ -5,7 +5,7 @@ using namespace std;
 
 void RunCentralityDetermination(TString DATAFILE, TString DATAHISTO,
 				TString GLAUBERFILE,TString OUTFILE,
-				Double_t STARTBIN=20){
+				Double_t STARTBIN=20, Double_t STOPBIN=-1){
 
   //Load the Necessary Libraries
   gSystem->Load("../bin/GlauberClass_cxx");
@@ -32,6 +32,7 @@ void RunCentralityDetermination(TString DATAFILE, TString DATAHISTO,
   const Int_t nTrials(5);          //Number of times to repeat this process
   Int_t bestTrial(0);              //This is the Index of the trial that had the highest Inverse Chi2
   Double_t startBinCenter(STARTBIN);  //The value of the bin where we want to start matching
+  Double_t stopBinCenter(STOPBIN);    //The value of the bin where we want to stop matching
   Int_t nItersPerTrial(100);       //The number of choices of (n,p) in each trial
   NegBinomialSearchResults bestBinomialParameters[nTrials];
   
@@ -43,7 +44,8 @@ void RunCentralityDetermination(TString DATAFILE, TString DATAHISTO,
     //Find the Best Fit NB Parameters
     bestBinomialParameters[iTrial] =
       FindBestFitNegativeBinomialParameters(dataHisto,glauberTree,outFile,
-					    startBinCenter,nItersPerTrial,iTrial);
+					    startBinCenter,stopBinCenter,
+					    nItersPerTrial,iTrial);
     
     //Keep track of the trial with the best inverse chi2
     if (bestBinomialParameters[iTrial].InverseChi2 >=
@@ -98,7 +100,8 @@ void RunCentralityDetermination(TString DATAFILE, TString DATAHISTO,
     
   }//End Loop Over Centrality Bins
 
-
-
+  //Save the Data Histo to the output file                                                                    
+  outFile->cd();
+  dataHisto->Write();
   
 }

@@ -54,17 +54,34 @@ Bool_t IsGoodTrack(TrackInfo *track){
 }
 
 //_______________________________________________________________
+std::vector<double> GetCentralityPercents(){
+
+  //Returns a vector containing the matching percent bins of
+  //the centrality cuts in GetCentralityCuts() below
+
+  std::vector<double> centralityPercents;
+  //Most Central
+  centralityPercents.push_back(10); //Top 10%
+  centralityPercents.push_back(20); //Top 20%
+  centralityPercents.push_back(30); //Top 30%
+  //Most Peripheral
+
+  return centralityPercents;
+
+}
+
+//_______________________________________________________________
 std::vector<int> GetCentralityCuts(){
 
-  //Returns a pointer to the vector of centrality Cuts
+  //Returns a the vector of centrality Cuts
 
   //Set your centrality cuts here order them from most central
   //to most peripheral.
   std::vector<int> centralityCuts;
   //Most Central
-  centralityCuts.push_back(16);
-  centralityCuts.push_back(11);
-  centralityCuts.push_back(8);
+  centralityCuts.push_back(200);
+  centralityCuts.push_back(154);
+  centralityCuts.push_back(100);
   //Most Peripheral
 
   return centralityCuts;
