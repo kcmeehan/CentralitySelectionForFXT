@@ -25,6 +25,9 @@ Bool_t IsGoodEvent(EventInfo *event){
   if (event->GetNPrimaryVertices() <= 0)
     return false;
 
+  if (event->GetTofMultiplicity() < 50)
+    return false;
+  
   return true;
 
 }
@@ -33,10 +36,10 @@ Bool_t IsGoodEvent(EventInfo *event){
 Bool_t IsGoodVertex(PrimaryVertexInfo *vertex){
 
   //Returns true if this vertex passes all your cuts
-  if (vertex->GetZVertex() < -200 || vertex->GetZVertex() >= -150)
+  if (vertex->GetZVertex() < 210 || vertex->GetZVertex() > 212)
     return false;
 
-  if (vertex->GetRVertex() < 2 || vertex->GetRVertex() > 5)
+  if (vertex->GetNTofMatches() < 2)
     return false;
 
   return true;
@@ -47,7 +50,10 @@ Bool_t IsGoodTrack(TrackInfo *track){
 
   //Returns true if this track passes all your cuts
   
-  if ( track->GetNFrac() < 0.52)
+  if (track->GetNFrac() < 0.52)
+    return false;
+
+  if (track->GetdEdxHits() == 0)
     return false;
   
   return true;

@@ -5,17 +5,17 @@
 
 ######################################################
 #SET THE YIELD HISTOGRAM FILE NAME AND PATH (FULL PATH)
-yieldHistoFile=/scratch_ssdMenkar/cflores/davisdstanalysis/userfiles/AuAl_3_0/YieldHistograms.root
+yieldHistoFile=/home/chris/Documents/davisdstanalysis/userfiles/AuAu_4_5_2015/YieldHistograms.root
 
 #SET THE SPECTRA FILE NAME AND PATH (FULL PATH)
-spectraFile=/scratch_ssdMenkar/cflores/davisdstanalysis/userfiles/AuAl_3_0/Spectra.root
+spectraFile=/home/chris/Documents/davisdstanalysis/userfiles/AuAu_4_5_2015/Spectra.root
 
 #SET THE OUTPUT IMAGE DIRECTORY (LEAVE BLANK TO SAVE NO IMAGES)
-imageDir=
+imageDir=/home/chris/Documents/davisdstanalysis/userfiles/AuAu_4_5_2015/Images/
 
 #SET THE RAPIDITY VALUE (USE -999 FOR ALL)
-rapidityValue=1.25
-
+#rapidityValue=-1.5
+rapidityValue=-999
 #SET THE CENTRALITY BIN INDEX (USE -1 FOR ALL)
 centralityIndex=0
 

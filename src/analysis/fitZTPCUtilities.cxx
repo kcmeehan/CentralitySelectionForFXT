@@ -68,7 +68,7 @@ void LoadYieldHistograms(TH3D *yieldHisto3D, std::vector<std::vector<TH1D *> > *
 
 
 }
-
+		      
 //______________________________________________________________________________________________________ 
 void DefineParticlePars(ParticlePars *p, TString name){
 
@@ -121,6 +121,52 @@ void AddPointToParGraph(TGraphErrors *parGraph, TF1 *fitFunc, Int_t par, Int_t m
 			  fitFunc->GetParError(par));
 
 }
+
+//__________________________________________________________________
+Double_t FindMaxBinCenter(TH1D *h, Double_t min, Double_t max){
+
+  //Loop Over the Bins the the range min to max and return the
+  //bin ceter of the bin with the largest content
+
+  Double_t binCenter(0);
+  Double_t maxValue(-1);
+
+  for (Int_t iBin=h->FindBin(min); iBin<h->FindBin(max); iBin++){
+
+    Double_t binContent = h->GetBinContent(iBin);
+    if (h->GetBinContent(iBin) > maxValue){
+      binCenter = h->GetBinCenter(iBin);
+      maxValue = binContent;
+    }
+  }
+
+  return binCenter;
+
+}
+
+//___________________________________________________________________
+Double_t FindMinBinCenter(TH1D *h, Double_t min, Double_t max){
+
+  //Loop over the Bins in the range min to max and return the
+  //bin center of the bin with the smallest content
+
+  Double_t binCenter(0);
+  Double_t minValue(10000000000);
+
+  for (Int_t iBin=h->FindBin(min); iBin<h->FindBin(max); iBin++){
+
+    Double_t binContent = h->GetBinContent(iBin);
+    if (binContent < minValue){
+      binCenter = h->GetBinCenter(iBin);
+      minValue = binContent;
+    }
+
+  }
+
+  return binCenter;
+}
+
+
 
 //_______________________________________________________________________________
 TLine *PredictionLine(TLine *line, Double_t prediction, Double_t height){
