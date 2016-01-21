@@ -186,6 +186,9 @@ void fitZTPCPions(TString ZTPCFILE, TString SPECTRAFILE, TString STARLIB, Int_t 
 					 rawSpectraMinus.at(yIndex),
 					 yIndex,mTm0Index,PION,-1,IMAGEDIR);
 
+      if (!success)
+	continue;
+
       
     }//End Loop Over mTm0Index
 
@@ -226,6 +229,9 @@ void fitZTPCPions(TString ZTPCFILE, TString SPECTRAFILE, TString STARLIB, Int_t 
 					 tpcPionPlusFit.at(yIndex).at(mTm0Index),
 					 rawSpectraPlus.at(yIndex),
 					 yIndex,mTm0Index,PION,1,IMAGEDIR);
+
+      if (!success)
+	continue;
       
       
     }//End Loop Over mTm0Index
