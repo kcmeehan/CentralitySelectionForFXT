@@ -26,7 +26,7 @@ numberOfFiles=${#dataFiles[@]}
 outFiles=()
 #i=$dataDirectory
 #i+=$dataFiles
-boolVert=false
+boolVert=true
 
 for i in ${dataFiles[@]}
 do
