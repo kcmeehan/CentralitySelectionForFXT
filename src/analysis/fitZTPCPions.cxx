@@ -141,8 +141,8 @@ void fitZTPCPions(TString ZTPCFILE, TString SPECTRAFILE, TString STARLIB, Int_t 
   TFile *inFile = new TFile(ZTPCFILE,"READ");
   TH3D *pionPlusZTPC3D = (TH3D *)inFile->Get(Form("PionPlus/zTPC_PionPlus_Cent%d",centralityIndex));
   TH3D *pionMinusZTPC3D = (TH3D *)inFile->Get(Form("PionMinus/zTPC_PionMinus_Cent%d",centralityIndex));
-  LoadYieldHistograms(pionPlusZTPC3D,&tpcPionPlusHisto,rapidityIndex);
-  LoadYieldHistograms(pionMinusZTPC3D,&tpcPionMinusHisto,rapidityIndex);
+  LoadYieldHistograms(pionPlusZTPC3D,&tpcPionPlusHisto,"TPC",rapidityIndex);
+  LoadYieldHistograms(pionMinusZTPC3D,&tpcPionMinusHisto,"TPC",rapidityIndex);
   nEventsHisto = (TH1D *)inFile->Get("nEvents");
      
   //Set Style Options
