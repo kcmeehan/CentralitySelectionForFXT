@@ -29,7 +29,7 @@ void DrawSingleSpectrum(TString spectraFile, TString system, Double_t energy, In
 							 Type.Data(),speciesName.Data(),
 							 spectraName.Data()));
 
-  spectrum->SetMarkerColor(particleInfo->GetParticleColor(PION));
+  spectrum->SetMarkerColor(particleInfo->GetParticleColor(speciesIndex));
 
 
 
