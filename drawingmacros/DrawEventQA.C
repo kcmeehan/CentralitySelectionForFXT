@@ -50,6 +50,7 @@ void DrawEventQA(TString inputFile, Bool_t eventCuts){
  
 //draw histograms
   TCanvas *cTrigIdsNoCuts = new TCanvas("cTriggerIdsNoCuts","cTriggerIdsNoCuts",600,600);
+	gPad->SetLogy();
   htrigNoCuts->GetXaxis()->SetTitle("Offline Trigger Id");
   htrigNoCuts->GetYaxis()->SetTitle("Triggered Events");
   htrigNoCuts->GetYaxis()->SetTitleOffset(1.3);
@@ -76,6 +77,7 @@ void DrawEventQA(TString inputFile, Bool_t eventCuts){
   if(eventCuts){
     
     TCanvas *cTrigIds = new TCanvas("cTriggerIds","cTriggerIds",600,600);
+	  gPad->SetLogy();
     htrig->GetXaxis()->SetTitle("Offline Trigger Id");
     htrig->GetYaxis()->SetTitle("Triggered Events");
     htrig->GetYaxis()->SetTitleOffset(1.3);
