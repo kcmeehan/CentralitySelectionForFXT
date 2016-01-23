@@ -96,9 +96,11 @@ void DrawVertexQA(TString inputFile, Bool_t vertexCuts){
   }
 
   TCanvas *tofmatchNoCuts = new TCanvas("tofmatchNoCuts","tofmatchNoCuts",600,600);
+  gPad->SetLogy();
   ntofMatchHistNoCuts->SetStats(0);
   ntofMatchHistNoCuts->GetXaxis()->SetTitle("# of TOF Matched Tracks");
   ntofMatchHistNoCuts->GetYaxis()->SetTitle("Vertices");
+  ntofMatchHistNoCuts->GetYaxis()->SetTitleOffset(1.3);
   ntofMatchHistNoCuts->Draw();
 
   if(vertexCuts){
@@ -122,9 +124,11 @@ void DrawVertexQA(TString inputFile, Bool_t vertexCuts){
     VyVzHisto->Draw("colz");
   
     TCanvas *tofmatch = new TCanvas("tofmatch","tofmatch",600,600);
+		gPad->SetLogy();
     ntofMatchHist->SetStats(0);
     ntofMatchHist->GetXaxis()->SetTitle("# of TOF Matched Tracks");
     ntofMatchHist->GetYaxis()->SetTitle("Vertices");
+    ntofMatchHist->GetYaxis()->SetTitleOffset(1.3);
     ntofMatchHist->Draw();
 
     TCanvas *cTOFvsPiMult = new TCanvas("cTOFvsPiMult","cTOFvsPiMult",1200,600);
