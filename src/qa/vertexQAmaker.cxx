@@ -70,7 +70,7 @@ if (vertexCuts){
 }
 
 Double_t x(0), y(0), z(0), refMultUser(0);
-Int_t nPions, newNtof, pvEntries;
+Int_t pvEntries;
 Double_t entries;
 if(nEvents > 0) entries = nEvents;
 else entries = tree->GetEntries();
@@ -94,6 +94,7 @@ for(Int_t i=0; i<entries; i++){//loop over triggers
 	  multHistoNoCuts->Fill(refMultUser);
 
     //track loop to calculate variables for event cuts
+    Int_t newNtof = 0, nPions = 0;
 		for(Int_t k = 0; k<primaryVertex->trackArray->GetEntries();k++){
 		  track = (TrackInfo *)primaryVertex->trackArray->At(k);
 			if (!IsGoodTrack(track)) continue;
