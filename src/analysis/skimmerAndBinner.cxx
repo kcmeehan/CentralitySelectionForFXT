@@ -18,6 +18,7 @@
 #include "TrackInfo.h"
 #include "PrimaryVertexInfo.h"
 #include "EventInfo.h"
+#include "DavisDstReader.h"
 #include "ParticleInfo.h"
 #include "UserCuts.h"
 
@@ -25,15 +26,13 @@
 void skimmerAndBinner(TString inputDataFile,TString starLibrary, 
 		      Long64_t nEvents=-1, TString outputFile=""){
 
+  //Read the DavisDst
+  DavisDstReader davisDst(inputDataFile);
+
   //Create Pointers needed for reading the tree
   TrackInfo *track = NULL;
   PrimaryVertexInfo *primaryVertex = NULL;
   EventInfo *event = NULL;
-
-  //Open the inputFile for reading and get the tree
-  TFile *inFile = new TFile(inputDataFile,"READ");
-  TTree *tree = (TTree *)inFile->Get("DataTree");
-  tree->FindBranch("EventInfo")->SetAddress(&event);
 
   //If no output file was specified then we won't produce one
   TFile *outFile = NULL;
@@ -42,7 +41,6 @@ void skimmerAndBinner(TString inputDataFile,TString starLibrary,
 
   //Create an instance of the Particle Info Class
   ParticleInfo *particleInfo = new ParticleInfo(starLibrary,true,TRUNCATED);
-  //const int nParticles = particleInfo->GetNumberOfDefinedParticles();
 
   //************************************************************************
   //Temporary solution since nSigma there is not an nSigma 
@@ -177,29 +175,30 @@ void skimmerAndBinner(TString inputDataFile,TString starLibrary,
   if (nEvents > 0)
     nEntries = nEvents;
   else
-    nEntries = tree->GetEntries();
+    nEntries = davisDst.GetEntries();
 
+  
   //-------------------------------------------------------------------------------
   //SKIM DATA: Loop Over the tree to apply the event and vertex cuts. Track cuts
   //           are applied during the binning phase below.
   //-------------------------------------------------------------------------------
   std::vector<std::pair<int,std::vector<int> > > goodEntries;
-  tree->SetBranchStatus("primaryVertexArray.trackArray",0);
+  davisDst.SetBranchStatus("TrackInfo.*",0);
   for (Int_t iEntry=0; iEntry<nEntries; iEntry++){
 
     //Get the ith entry and check if it passes the cuts
-    tree->GetEntry(iEntry);
+    event = davisDst.GetEntry(iEntry);
     if (!IsGoodEvent(event))
       continue;
 
     std::vector<int> tempVertexIndex(0);
 
     //Loop over the primary vertex array of this event
-    Int_t nPrimaryVertices = event->GetPrimaryVertexArray()->GetEntries();
+    Int_t nPrimaryVertices = event->GetNPrimaryVertices();
     for (Int_t iPrimaryVertex=0; iPrimaryVertex<nPrimaryVertices; iPrimaryVertex++){
 
       //Get the ith primary vertex and check if it passes the cuts 
-      primaryVertex = (PrimaryVertexInfo *)event->GetPrimaryVertexArray()->At(iPrimaryVertex);
+      primaryVertex = event->GetPrimaryVertex(iPrimaryVertex);
       if (!IsGoodVertex(primaryVertex))
         continue;
 
@@ -215,25 +214,26 @@ void skimmerAndBinner(TString inputDataFile,TString starLibrary,
 
   }//End Loop Over Events
   //END APPLY CUTS
+  
 
   //--------------------------------------------------------------------------------
   //BIN DATA: Loop Over the entries in the goodEntries vector. Bin the events in 
   //          centrality and the tracks in rapidity and transverse mass if they
   //          pass the track cuts.  
   //--------------------------------------------------------------------------------
-  tree->SetBranchStatus("primaryVertexArray.trackArray",1);
+  davisDst.SetBranchStatus("*",1);
   for (std::vector<std::pair<int,std::vector<int> > >::iterator goodEntry = goodEntries.begin(); 
        goodEntry != goodEntries.end(); ++goodEntry){
     
     //Get the good Entry
-    tree->GetEntry((*goodEntry).first);
+    event = davisDst.GetEntry((*goodEntry).first);
     
     //Loop Over the Primary Vertex Array of this event
     for (std::vector<int>::iterator iPrimaryVertex = ((*goodEntry).second).begin(); 
 	 iPrimaryVertex != ((*goodEntry).second).end(); ++iPrimaryVertex){
       
       //Get the ith primary vertex
-      primaryVertex = (PrimaryVertexInfo *)event->GetPrimaryVertexArray()->At((*iPrimaryVertex));
+      primaryVertex = event->GetPrimaryVertex(*iPrimaryVertex);
 
       //Figure out the centrality bin here
       Int_t centralityVariable = GetCentralityVariable(primaryVertex);
@@ -248,11 +248,11 @@ void skimmerAndBinner(TString inputDataFile,TString starLibrary,
       centVarHisto.at(centralityBin)->Fill((double)centralityVariable);
 
       //Loop Over the Primary Tracks of this primary vertex
-      Int_t nPrimaryTracks = primaryVertex->GetPrimaryTrackArray()->GetEntries();
+      Int_t nPrimaryTracks = primaryVertex->GetNPrimaryTracks();
       for (Int_t iPrimaryTrack=0; iPrimaryTrack<nPrimaryTracks; iPrimaryTrack++){
 
 	//Get the ith primary track and check if it passes the cuts
-	track = (TrackInfo *)primaryVertex->GetPrimaryTrackArray()->At(iPrimaryTrack);
+	track = primaryVertex->GetPrimaryTrack(iPrimaryTrack);
 	if (!IsGoodTrack(track))
 	  continue;
 

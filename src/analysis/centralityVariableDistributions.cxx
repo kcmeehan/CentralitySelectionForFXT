@@ -12,6 +12,7 @@
 #include "TrackInfo.h"
 #include "PrimaryVertexInfo.h"
 #include "EventInfo.h"
+#include "DavisDstReader.h"
 #include "ParticleInfo.h"
 #include "UserCuts.h"
 
@@ -19,16 +20,13 @@
 //____MAIN___________________________________________________________________________
 void centralityVariableDistributions(TString inputDataFile, Long64_t nEvents=-1, TString outputFile=""){
 
+  //Read the DavisDst
+  DavisDstReader davisDst(inputDataFile);
 
   //Create Pointers needed for reading the tree
   TrackInfo *track = NULL;
   PrimaryVertexInfo *primaryVertex = NULL;
   EventInfo *event = NULL;
-
-  //Open the inputFile for reading and get the tree
-  TFile *inFile = new TFile(inputDataFile,"READ");
-  TTree *tree = (TTree *)inFile->Get("DataTree");
-  tree->FindBranch("EventInfo")->SetAddress(&event);
 
   //If no output file was specified then we won't produce one
   TFile *outFile = NULL;
@@ -46,32 +44,32 @@ void centralityVariableDistributions(TString inputDataFile, Long64_t nEvents=-1,
   if (nEvents > 0)
     nEntries = nEvents;
   else
-    nEntries = tree->GetEntries();
+    nEntries = davisDst.GetEntries();
 
   for (Int_t iEntry=0; iEntry<nEntries; iEntry++){
 
     //Get the ith entry and check if it passes the cuts
-    tree->GetEntry(iEntry);
+    event = davisDst.GetEntry(iEntry);
     if (!IsGoodEvent(event))
       continue;
     
     //Loop over the primary vertex array of this event                                                           
-    Int_t nPrimaryVertices = event->GetPrimaryVertexArray()->GetEntries();
+    Int_t nPrimaryVertices = event->GetNPrimaryVertices();
     for (Int_t iPrimaryVertex=0; iPrimaryVertex<nPrimaryVertices; iPrimaryVertex++){
 
       //Get the ith primary vertex and check if it passes the cuts                                               
-      primaryVertex = (PrimaryVertexInfo *)event->GetPrimaryVertexArray()->At(iPrimaryVertex);
+      primaryVertex = event->GetPrimaryVertex(iPrimaryVertex);
       if (!IsGoodVertex(primaryVertex))
         continue;
 
       Double_t pionMult(0), totalMult(0);
       
       //Loop Over the Primary Tracks associated with this primary vertex
-      Int_t nPrimaryTracks = primaryVertex->trackArray->GetEntries();
+      Int_t nPrimaryTracks = primaryVertex->GetNPrimaryTracks();
       for (Int_t iPrimaryTrack=0; iPrimaryTrack<nPrimaryTracks; iPrimaryTrack++){
 
 	//Get the ith primary track and check if it is good
-	track = (TrackInfo *)primaryVertex->trackArray->At(iPrimaryTrack);
+	track = primaryVertex->GetPrimaryTrack(iPrimaryTrack);
 	if (!IsGoodTrack(track))
 	  continue;
 
