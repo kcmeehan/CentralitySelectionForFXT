@@ -10,7 +10,7 @@
 dataDirectory=/scratch_rigel/FixedTargetData/AuAl_DavisDSTs/AuAl_3_0_2010/
 
 #SET THE OUTPUT DIRECTORY HERE
-outputDirectory=../userfiles/AuAl_3_0/
+outputDirectory=../userfiles/readExample
 
 #SET THE NUMBER OF EVENTS HERE (USE -1 FOR ALL)
 nEvents=1000
