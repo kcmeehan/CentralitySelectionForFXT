@@ -20,6 +20,7 @@ void makeLibs(TString opt=""){
   gSystem->CompileMacro("src/submodules/datacollectorreaderlibs/TrackInfo/TrackInfo.cxx","k");
   gSystem->CompileMacro("src/submodules/datacollectorreaderlibs/PrimaryVertexInfo/PrimaryVertexInfo.cxx","k");
   gSystem->CompileMacro("src/submodules/datacollectorreaderlibs/EventInfo/EventInfo.cxx","k");
+  gSystem->CompileMacro("src/submodules/datacollectorreaderlibs/DavisDstReader/DavisDstReader.cxx","k");
   gSystem->CompileMacro("src/submodules/ParticleInfo/ParticleInfo/ParticleInfo.cxx","k");
 
   //Glauber Source
@@ -37,8 +38,10 @@ void makeLibs(TString opt=""){
   gSystem->CompileMacro("userfiles/UserCuts.cxx","k");
   gSystem->CompileMacro("src/analysis/utilityFunctions.cxx","k");
   gSystem->CompileMacro("src/analysis/readerExample.cxx","k");
+  /*
   gSystem->CompileMacro("src/analysis/centralityVariableDistributions.cxx","k");
   gSystem->CompileMacro("src/analysis/skimmerAndBinner.cxx","k");
   gSystem->CompileMacro("src/analysis/fitZTPCUtilities.cxx","k");
   gSystem->CompileMacro("src/analysis/fitZTPCPions.cxx","k");
+  */
 }

@@ -16,12 +16,12 @@
 #include "TrackInfo.h"
 #include "PrimaryVertexInfo.h"
 #include "EventInfo.h"
+#include "DavisDstReader.h"
 
 void reader(TString inputDataFile, Int_t maxEvents=-1, TString outputFile=""){
 
-  //Open the inputDataFile for reading and get the data tree
-  TFile *inFile = new TFile(inputDataFile,"READ");
-  TTree *tree = (TTree *)inFile->Get("DataTree");
+  //Use the DavisDstReader to open and read the file
+  DavisDstReader davisDst(inputDataFile);
 
   //If no outputFile was specified then we won't produce one
   //otherwise we will
@@ -33,9 +33,6 @@ void reader(TString inputDataFile, Int_t maxEvents=-1, TString outputFile=""){
   TrackInfo *track = NULL;
   PrimaryVertexInfo *primaryVertex = NULL;
   EventInfo *event = NULL;
-
-  //Set the address of the EventInfo object in the tree to the event pointer
-  tree->FindBranch("EventInfo")->SetAddress(&event);
 
   //As a demonstration lets fill a few histograms...
   //An event level one...
@@ -53,42 +50,42 @@ void reader(TString inputDataFile, Int_t maxEvents=-1, TString outputFile=""){
     nEvents = maxEvents;
   //Otherwise run over all the events in the tree
   else 
-    nEvents = tree->GetEntries();
+    nEvents = davisDst.GetEntries();
   
   //Loop Over the Events in the tree. For each event loop over its primary
   //vertices, and for each primary vertex loop over its associated primary tracks
   for (Long64_t iEvent=0; iEvent< nEvents; iEvent++){
 
     //Get the Event Entry
-    tree->GetEntry(iEvent);
+    event = davisDst.GetEntry(iEvent);
 
     //Fill the event level histogram
-    nPrimaryVertexHisto->Fill(event->nPrimaryVertices);
+    nPrimaryVertexHisto->Fill(event->GetNTotalVertices());
     
     //Loop Over the Primary Vertices
-    Int_t nPrimaryVertices = event->primaryVertexArray->GetEntries(); 
+    Int_t nPrimaryVertices = event->GetNPrimaryVertices(); 
     for (Int_t iPrimaryVertex=0; iPrimaryVertex<nPrimaryVertices; iPrimaryVertex++){
 
       //Get the ith primary vertex.
       //It is saved as a TObject so we need to cast it to the correct type
-      primaryVertex = (PrimaryVertexInfo *)event->primaryVertexArray->At(iPrimaryVertex);
+      primaryVertex = event->GetPrimaryVertex(iPrimaryVertex);
 
       //Fill the vertex level histogram
-      zVertexHisto->Fill(primaryVertex->zVertex);
+      zVertexHisto->Fill(primaryVertex->GetZVertex());
 
       //Loop Over the Primary Tracks associated with this primary vertex
-      Int_t nPrimaryTracks = primaryVertex->trackArray->GetEntries();
+      Int_t nPrimaryTracks = primaryVertex->GetNPrimaryTracks();
       for (Int_t iPrimaryTrack=0; iPrimaryTrack<nPrimaryTracks; iPrimaryTrack++){
 
 	//Get the ith primary Track.
 	//It is saved as a TObject so we need to cast it to the correct type
-	track = (TrackInfo *)primaryVertex->trackArray->At(iPrimaryTrack);
+	track = primaryVertex->GetPrimaryTrack(iPrimaryTrack);
 
 	//Compute the Track's Total Momentum
-	Double_t totalMomentum = sqrt(pow(track->pT,2) + pow(track->pZ,2));
+	Double_t totalMomentum = sqrt(pow(track->GetPt(),2) + pow(track->GetPz(),2));
 
 	//Fill the track level histo
-	dEdxHisto->Fill(totalMomentum,1000000*track->dEdxTruncated);	
+	dEdxHisto->Fill(totalMomentum,1000000*track->GetdEdx());	
 
       }//End Loop Over Primary Vertex
 

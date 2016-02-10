@@ -32,7 +32,7 @@ do
 
     outFiles+=($outFile)
 
-    root -l -q -b '../macros/RunReaderExample.C ('\"$i\"','$nEvents','\"$outFile\"')' > /dev/null 2>&1 &
+    root -l -q -b '../macros/RunReaderExample.C ('\"$i\"','$nEvents','\"$outFile\"')' #> /dev/null 2>&1 &
     
     processID+=($!)
     echo ${processID[@]}
