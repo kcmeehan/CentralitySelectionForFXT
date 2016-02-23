@@ -25,6 +25,7 @@
 #include "../submodules/datacollectorreaderlibs/TrackInfo/TrackInfo.h"
 #include "../submodules/datacollectorreaderlibs/PrimaryVertexInfo/PrimaryVertexInfo.h"
 #include "../submodules/datacollectorreaderlibs/EventInfo/EventInfo.h"
+#include "../submodules/datacollectorreaderlibs/DavisDstReader/DavisDstReader.h"
 #include "ParticleInfo.h"
 #include "UserCuts.h"
 
@@ -37,16 +38,13 @@ void trackQAmaker(TString inputDataFile, TString outputFile, Bool_t trackCuts = 
 //you must use trackQAmaker.cxx for track qa. The purpose of this function is to allow 
 //the user to optimize vertex cuts.
 
-TFile *file     = new TFile(inputDataFile,"READ");
-TTree *tree     = (TTree *)file->Get("DataTree");
+DavisDstReader davisDst(inputDataFile);
 
 TFile *outFile  = new TFile(outputFile,"RECREATE");
 
 TrackInfo *track = NULL;
 PrimaryVertexInfo *primaryVertex = NULL;
 EventInfo *event = NULL;
-
-tree->FindBranch("EventInfo")->SetAddress(&event);
 
 TH2D *etaphiHist = new TH2D("etaphiHist","#phi vs #eta",500,-2.,0.5,500,-4,4);
 TH2D *etaphiHistTOF = new TH2D("etaphiHistTOF","#phi vs #eta",500,-2.,0.5,500,-4,4);
@@ -123,16 +121,17 @@ double mPion = 0.13957018;
 double mProton = 0.938272046;
 Double_t entries;
 if(nEvents > 0) entries = nEvents;
-else entries = tree->GetEntries();
+else entries = davisDst.GetEntries();
 for(Int_t i=0; i<entries; i++){//loop over triggers
-  tree->GetEntry(i);
+	event = davisDst.GetEntry(i);
 	if (!IsGoodEvent(event)) continue;
-	pvEntries = event->primaryVertexArray->GetEntries();
+	pvEntries = event->GetNPrimaryVertices();
   for (Int_t j=0; j<pvEntries; j++){//loop over vertices
-	  primaryVertex = (PrimaryVertexInfo *)event->primaryVertexArray->At(j);
+	  primaryVertex = event->GetPrimaryVertex(j);
     if (!IsGoodVertex(primaryVertex)) continue;
-	    for(Int_t k = 0; k<primaryVertex->trackArray->GetEntries();k++){//loop over tracks
-			  track = (TrackInfo *)primaryVertex->trackArray->At(k);
+		Int_t nPrimaryTracks = primaryVertex->GetNPrimaryTracks();
+	    for(Int_t k = 0; k<nPrimaryTracks;k++){//loop over tracks
+			  track = primaryVertex->GetPrimaryTrack(k);
 				if (trackCuts) {
           if (!IsGoodTrack(track)) continue;
 				}
@@ -259,7 +258,6 @@ for(Int_t i=0; i<entries; i++){//loop over triggers
  }//end of loop over vertices
 }//end of loop over triggers
 
-file->Close();
 outFile->Write();
 
 }//end of function
