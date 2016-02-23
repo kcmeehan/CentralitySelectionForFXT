@@ -10,6 +10,7 @@ void RunVertexQA(TString inputFile, TString outputFile, Bool_t vertexCuts, Int_t
     gSystem->Load("../bin/EventInfo_cxx.so");
     gSystem->Load("../bin/ParticleInfo_cxx.so");
   
+	  gSystem->Load("../bin/DavisDstReader_cxx.so");
     gSystem->Load("../bin/UserCuts_cxx.so");
     gSystem->Load("../bin/vertexQAmaker_cxx.so");
 

@@ -43,9 +43,8 @@ void makeLibs(TString opt=""){
   gSystem->CompileMacro("src/analysis/fitZTPCUtilities.cxx","k");
   gSystem->CompileMacro("src/analysis/fitZTPCPions.cxx","k");
   
-	/*
+	
 	gSystem->CompileMacro("src/qa/eventQAmaker.cxx","k");
 	gSystem->CompileMacro("src/qa/vertexQAmaker.cxx","k");
 	gSystem->CompileMacro("src/qa/trackQAmaker.cxx","k");
-  */
 }
