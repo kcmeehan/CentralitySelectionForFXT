@@ -88,11 +88,11 @@ void DrawVertexQA(TString inputFile, Bool_t vertexCuts){
     multHistoNoCuts->Draw();
     cMult->cd(2);
     gPad->SetLogz();
-    TOFvsPiMultHistNoCuts->SetStats(0);
-    TOFvsPiMultHistNoCuts->GetXaxis()->SetTitle("Pion Multiplicity");
-    TOFvsPiMultHistNoCuts->GetYaxis()->SetTitle("# of TOF Matched Tracks");
-    TOFvsPiMultHistNoCuts->GetYaxis()->SetTitleOffset(1.3);
-    TOFvsPiMultHistNoCuts->Draw("colz"); 
+    TOFvsMultHistNoCuts->SetStats(0);
+    TOFvsMultHistNoCuts->GetXaxis()->SetTitle("# of Tracks");
+    TOFvsMultHistNoCuts->GetYaxis()->SetTitle("# of TOF Matched Tracks");
+    TOFvsMultHistNoCuts->GetYaxis()->SetTitleOffset(1.3);
+    TOFvsMultHistNoCuts->Draw("colz"); 
   }
 
   TCanvas *tofmatchNoCuts = new TCanvas("tofmatchNoCuts","tofmatchNoCuts",600,600);
@@ -131,22 +131,22 @@ void DrawVertexQA(TString inputFile, Bool_t vertexCuts){
     ntofMatchHist->GetYaxis()->SetTitleOffset(1.3);
     ntofMatchHist->Draw();
 
-    TCanvas *cTOFvsPiMult = new TCanvas("cTOFvsPiMult","cTOFvsPiMult",1200,600);
-    cTOFvsPiMult->Divide(2,1);
-    cTOFvsPiMult->cd(1);
+    TCanvas *cTOFvsMult = new TCanvas("cTOFvsMult","cTOFvsMult",1200,600);
+    cTOFvsMult->Divide(2,1);
+    cTOFvsMult->cd(1);
     gPad->SetLogz();
-    TOFvsPiMultHistNoCuts->SetStats(0);
-    TOFvsPiMultHistNoCuts->GetXaxis()->SetTitle("Pion Multiplicity");
-    TOFvsPiMultHistNoCuts->GetYaxis()->SetTitle("# of TOF Matched Tracks");
-    TOFvsPiMultHistNoCuts->GetYaxis()->SetTitleOffset(1.3);
-    TOFvsPiMultHistNoCuts->Draw("colz");
-    cTOFvsPiMult->cd(2);
+    TOFvsMultHistNoCuts->SetStats(0);
+    TOFvsMultHistNoCuts->GetXaxis()->SetTitle("# of Tracks");
+    TOFvsMultHistNoCuts->GetYaxis()->SetTitle("# of TOF Matched Tracks");
+    TOFvsMultHistNoCuts->GetYaxis()->SetTitleOffset(1.3);
+    TOFvsMultHistNoCuts->Draw("colz");
+    cTOFvsMult->cd(2);
     gPad->SetLogz();
-    TOFvsPiMultHist->SetStats(0);
-    TOFvsPiMultHist->GetXaxis()->SetTitle("Pion Multiplicity");
-    TOFvsPiMultHist->GetYaxis()->SetTitle("# of TOF Matched Tracks");
-    TOFvsPiMultHist->GetYaxis()->SetTitleOffset(1.3);
-    TOFvsPiMultHist->Draw("colz");
+    TOFvsMultHist->SetStats(0);
+    TOFvsMultHist->GetXaxis()->SetTitle("# of Tracks");
+    TOFvsMultHist->GetYaxis()->SetTitle("# of TOF Matched Tracks");
+    TOFvsMultHist->GetYaxis()->SetTitleOffset(1.3);
+    TOFvsMultHist->Draw("colz");
 
     TCanvas *cMult = new TCanvas("cMult","cMult",1800,600);
     cMult->Divide(3,1);
