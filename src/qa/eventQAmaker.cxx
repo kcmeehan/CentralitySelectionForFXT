@@ -6,7 +6,6 @@
 #include <TF1.h>
 #include <TH1D.h>
 #include <TH2D.h>
-#include <TH3D.h>
 #include <TFile.h>
 #include <TTree.h>
 #include <TString.h>
@@ -25,6 +24,7 @@
 #include "../submodules/datacollectorreaderlibs/TrackInfo/TrackInfo.h"
 #include "../submodules/datacollectorreaderlibs/PrimaryVertexInfo/PrimaryVertexInfo.h"
 #include "../submodules/datacollectorreaderlibs/EventInfo/EventInfo.h"
+#include "../submodules/datacollectorreaderlibs/DavisDstReader/DavisDstReader.h"
 #include "ParticleInfo.h"
 #include "UserCuts.h"
 
@@ -37,26 +37,33 @@ void eventQAmaker(TString inputDataFile, TString outFileName, Bool_t eventCuts =
 //track qa plots are made- you must use vertexQAmaker.cxx or trackQAmaker.cxx for those.
 //The purpose of this function is to allow the user to optimize triggered-event cuts.
 
-//obtaining data tree
-TFile *file     = new TFile(inputDataFile,"READ");
-TTree *tree     = (TTree *)file->Get("DataTree");
+//Use the DavisDstReader to open and read the file
+DavisDstReader davisDst(inputDataFile);
+if(eventCuts == false){
+  davisDst.SetBranchStatus("VertexInfo",0);
+  davisDst.SetBranchStatus("TrackInfo",0);
+}
 
 TFile *outFile  = new TFile(outFileName,"RECREATE");
 
+TrackInfo *track = NULL;
+PrimaryVertexInfo *primaryVertex = NULL;
 EventInfo *event = NULL;
 
-tree->FindBranch("EventInfo")->SetAddress(&event);
+
 //initializing trigger level histograms
 TH1D *htrigNoCuts = new TH1D("htrigNoCuts","Triggers",100,0,100);
 TH1D *tofMultHistNoCuts = new TH1D("tofMultHistNoCuts","TOF Multiplicity",500,0,500);
 TH1I *hnPrimaryVerticesNoCuts = new TH1I("hnPrimaryVerticesNoCuts","Primary Vertex Distribution",20,0,20);
+TH1I *hrunNumNoCuts = new TH1I("hrunNumNoCuts","Run Number",100,16140000,16140100);
 TH1D *htrig, *tofMultHist;
-TH1I *hnPrimaryVertices;
+TH1I *hnPrimaryVertices, *hrunNum;
 
 if (eventCuts){
   htrig = new TH1D("htrig","Triggers",100,0,100);
   tofMultHist = new TH1D("tofMultHist","TOF Multiplicity",500,0,500);
   hnPrimaryVertices = new TH1I("hnPrimaryVertices","Primary Vertex Distribution",20,0,20);
+  hrunNum = new TH1I("hrunNum","Run Number",100,16140000,16140100);
 }
 
 Int_t nTrig;
@@ -64,10 +71,10 @@ unsigned short tofMult;
 Double_t entries;
 //start loop over triggered-events
 if(nEvents > 0) entries = nEvents;
-else entries = tree->GetEntries();
+else entries = davisDst.GetEntries(); 
 for(Int_t i=0;i<entries;i++){
   //access data and fill trigger level histograms
-	tree->GetEntry(i);
+	event = davisDst.GetEntry(i);
   vector <unsigned int> trigIDs = event->triggerIDs;
 	nTrig = trigIDs.size();
 	tofMult = event->tofMultiplicity;
@@ -76,6 +83,7 @@ for(Int_t i=0;i<entries;i++){
 	}//currently we cannot access trigger ids, when this changes this code might need to be updated
   tofMultHistNoCuts->Fill(tofMult);
 	hnPrimaryVerticesNoCuts->Fill(event->nPrimaryVertices);
+	hrunNumNoCuts->Fill(event->runNumber);
   if(!eventCuts) continue; //if there are no event cuts we are done filling histograms
 	if(!IsGoodEvent(event)) continue; //an event passes this only if there are cuts and that event passes those cuts
 	for(int jtrig=0;jtrig<nTrig;jtrig++){
@@ -83,9 +91,9 @@ for(Int_t i=0;i<entries;i++){
 	}
   tofMultHist->Fill(tofMult);
   hnPrimaryVertices->Fill(event->nPrimaryVertices);
+	hrunNum->Fill(event->runNumber);
 }//end loop over triggers
 
-file->Close();
 outFile->Write();
 
 }//end of function
