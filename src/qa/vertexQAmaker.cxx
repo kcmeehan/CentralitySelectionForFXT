@@ -25,6 +25,7 @@
 #include "../submodules/datacollectorreaderlibs/TrackInfo/TrackInfo.h"
 #include "../submodules/datacollectorreaderlibs/PrimaryVertexInfo/PrimaryVertexInfo.h"
 #include "../submodules/datacollectorreaderlibs/EventInfo/EventInfo.h"
+#include "../submodules/datacollectorreaderlibs/DavisDstReader/DavisDstReader.h"
 #include "ParticleInfo.h"
 #include "UserCuts.h"
 
@@ -37,16 +38,16 @@ void vertexQAmaker(TString inputDataFile, TString outputFile, Bool_t vertexCuts 
 //you must use trackQAmaker.cxx for track qa. The purpose of this function is to allow 
 //the user to optimize vertex cuts.
 
-TFile *file     = new TFile(inputDataFile,"READ");
-TTree *tree     = (TTree *)file->Get("DataTree");
+DavisDstReader davisDst(inputDataFile);
+if(vertexCuts == false){
+  davisDst.SetBranchStatus("TrackInfo",0);
+}
 
 TFile *outFile  = new TFile(outputFile,"RECREATE");
 
 TrackInfo *track = NULL;
 PrimaryVertexInfo *primaryVertex = NULL;
 EventInfo *event = NULL;
-
-tree->FindBranch("EventInfo")->SetAddress(&event);
 
 //initializing pre-cut vertex histograms
 TH1D *FullVzHistoNoCuts = new TH1D("FullVzHistoNoCuts","V_{z} Distribution",520,-260,260);
@@ -55,9 +56,9 @@ TH2D *VyVzHistoNoCuts = new TH2D("VyVzHistoNoCuts","V_{y} vs. V_{z} Distribution
 TH2D *VxVyHistoNoCuts = new TH2D("VxVyHistoNoCuts","V_{y} vs. V_{x} Distribution",500,-5,5,500,-5,5);
 TH1D *multHistoNoCuts = new TH1D("multHistoNoCuts","Multiplicity",500,0,500);
 TH1D *ntofMatchHistNoCuts = new TH1D("ntofMatchHistNoCuts","Number of TOF Matches",500,0,500);
-TH2D *TOFvsPiMultHistNoCuts = new TH2D("TOFvsPiMultHistNoCuts","Number of TOF Matches vs. Pion Multiplicity",100,0,100,50,0,50);
+TH2D *TOFvsMultHistNoCuts = new TH2D("TOFvsMultHistNoCuts","Number of TOF Matches vs. Multiplicity",100,0,100,50,0,50);
 TH1D *VzHisto, *multHisto, *ntofMatchHist, *piMult;
-TH2D *VyVzHisto, *VxVyHisto, *TOFvsPiMultHist;
+TH2D *VyVzHisto, *VxVyHisto, *TOFvsMultHist;
 
 if (vertexCuts){
   VzHisto = new TH1D("VzHisto","V_{z} Distribution",140,208,215);
@@ -66,20 +67,20 @@ if (vertexCuts){
   multHisto = new TH1D("multHisto","Multiplicity",500,0,500);
   ntofMatchHist = new TH1D("ntofMatchHist","Number of TOF Matches",500,0,500);
   piMult = new TH1D("piMult","Pion Multiplicity",200,0,200);
-  TOFvsPiMultHist = new TH2D("TOFvsPiMultHist","Number of TOF Matches vs. Pion Multiplicity",100,0,100,50,0,50);
+  TOFvsMultHist = new TH2D("TOFvsMultHist","Number of TOF Matches vs. Multiplicity",100,0,100,50,0,50);
 }
 
 Double_t x(0), y(0), z(0), refMultUser(0);
 Int_t pvEntries;
 Double_t entries;
 if(nEvents > 0) entries = nEvents;
-else entries = tree->GetEntries();
+else entries = davisDst.GetEntries();
 for(Int_t i=0; i<entries; i++){//loop over triggers
-  tree->GetEntry(i);
+  event = davisDst.GetEntry(i);
 	if (!IsGoodEvent(event)) continue;
-	pvEntries = event->primaryVertexArray->GetEntries();
+	pvEntries = event->GetNPrimaryVertices();
   for (Int_t j=0; j<pvEntries; j++){//event->primaryVertexArray->GetEntries() 
-	  primaryVertex = (PrimaryVertexInfo *)event->primaryVertexArray->At(j);
+	  primaryVertex = event->GetPrimaryVertex(j);
 	
 	  x = primaryVertex->xVertex;
 	  y = primaryVertex->yVertex;
@@ -94,31 +95,34 @@ for(Int_t i=0; i<entries; i++){//loop over triggers
 	  multHistoNoCuts->Fill(refMultUser);
 
     //track loop to calculate variables for event cuts
-    Int_t newNtof = 0, nPions = 0;
-		for(Int_t k = 0; k<primaryVertex->trackArray->GetEntries();k++){
-		  track = (TrackInfo *)primaryVertex->trackArray->At(k);
+    Int_t nTOFmatches = 0;
+		Int_t nPions=0;
+		Int_t nTracks = 0;
+		Int_t nPrimaryTracks = primaryVertex->GetNPrimaryTracks();
+		for(Int_t k = 0; k<nPrimaryTracks;k++){
+		  track = primaryVertex->GetPrimaryTrack(k);
 			if (!IsGoodTrack(track)) continue;
-		  if (track->tofMatchFlag > 0) newNtof = newNtof + 1;
+			nTracks++;
+		  if (track->tofMatchFlag > 0) nTOFmatches = nTOFmatches + 1;
 		  Double_t q = track->charge;
 		  Double_t nSigmaPi = track->nSigmaPion;
 		  Double_t nSigmaPro = track->nSigmaProton;
-		  if ((q < 0 && abs(nSigmaPi) < 2) || (q > 0 && abs(nSigmaPi) < 2 && nSigmaPro < -1))         nPions++;
+		  if ((q < 0 && abs(nSigmaPi) < 2) || (q > 0 && abs(nSigmaPi) < 2 && nSigmaPro < -1)) nPions++;
 		}
-		ntofMatchHistNoCuts->Fill(newNtof);
-		TOFvsPiMultHistNoCuts->Fill(nPions,newNtof);
+		ntofMatchHistNoCuts->Fill(nTOFmatches);
+		TOFvsMultHistNoCuts->Fill(nTracks,nTOFmatches);
 	  if (!vertexCuts) continue;
     if (!IsGoodVertex(primaryVertex)) continue;
     VzHisto->Fill(z); 
     VyVzHisto->Fill(z,y);
     VxVyHisto->Fill(x,y);
     multHisto->Fill(refMultUser);
-    ntofMatchHist->Fill(newNtof);
-    TOFvsPiMultHist->Fill(nPions,newNtof);
+    ntofMatchHist->Fill(nTOFmatches);
+    TOFvsMultHist->Fill(nTracks,nTOFmatches);
     piMult->Fill(nPions);
  }//end of loop over vertices
 }//end of loop over triggers
 
-file->Close();
 outFile->Write();
 
 }//end of function
