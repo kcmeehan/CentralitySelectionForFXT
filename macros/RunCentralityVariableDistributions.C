@@ -8,6 +8,7 @@ void RunCentralityVariableDistributions(TString inputFile, Long64_t nEvents=-1, 
   gSystem->Load("../bin/TrackInfo_cxx.so");
   gSystem->Load("../bin/PrimaryVertexInfo_cxx.so");
   gSystem->Load("../bin/EventInfo_cxx.so");
+	gSystem->Load("../bin/DavisDstReader_cxx.so");
 
   gSystem->Load("../bin/UserCuts_cxx.so");
   gSystem->Load("../bin/centralityVariableDistributions_cxx.so");
