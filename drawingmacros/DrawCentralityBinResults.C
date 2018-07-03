@@ -18,8 +18,8 @@ void DrawCentralityBinResults(TString centralityVarName,
 
   //Load the File with the simulated histogram and load the histogram
   TFile *centBinResultFile = new TFile(centralityBinResults,"READ");
-  TH1D *centVarDataHisto = (TH1D *)centBinResultFile->Get(centralityVarName);
-  TH1D *centBinResultHisto = (TH1D *)centBinResultFile->Get(Form("bestFit_%d",bestMatch));
+  TH1D  *centVarDataHisto = (TH1D *)centBinResultFile->Get(centralityVarName);
+  TH1D  *centBinResultHisto = (TH1D *)centBinResultFile->Get(Form("bestFit_%d",bestMatch));
 
   //Create a canvas for drawing
   TCanvas *canvas = new TCanvas("centBinResultCanvas","Centrality Binning Results",20,20,800,600);
@@ -62,9 +62,9 @@ void DrawCentralityBinResults(TString centralityVarName,
     cutLines[i]->SetLineWidth(3);
     cutLines[i]->Draw("SAME");
 
-    cutLables[i] = new TPaveText(centCuts.at(i)-20,
+    cutLables[i] = new TPaveText(centCuts.at(i)+5,
 				 .005*lineHeight,
-				 centCuts.at(i)-5,
+				 centCuts.at(i)+20,
 				 .07*lineHeight);
     cutLables[i]->SetFillColor(kWhite);
     cutLables[i]->SetBorderSize(0);

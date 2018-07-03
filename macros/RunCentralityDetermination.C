@@ -36,9 +36,9 @@ void RunCentralityDetermination(TString DATAFILE, TString DATAHISTO,
   Int_t nItersPerTrial(100);       //The number of choices of (n,p) in each trial
   NegBinomialSearchResults bestBinomialParameters[nTrials];
   
-  //First, we need to find the parameters of the negative binomial distribution
-  //which results in a multiplicity distrubution that best matches the data. We
-  //repeat this process several times to get a feel for the associated error.
+  // First, we need to find the parameters of the negative binomial distribution
+  // which results in a multiplicity distribution that best matches the data. We
+  // repeat this process several times to get a feel for the associated error.
   for (Int_t iTrial=0; iTrial< nTrials; iTrial++){
 
     //Find the Best Fit NB Parameters
@@ -56,7 +56,9 @@ void RunCentralityDetermination(TString DATAFILE, TString DATAHISTO,
 
   cout <<"-----Step 1 of 3 is Complete-----" <<endl;
   cout <<"The Trial with the largest 1/Chi2 is: " <<bestTrial
-       <<" With 1/Chi2: " <<bestBinomialParameters[bestTrial].InverseChi2 <<endl;
+       <<" With 1/Chi2: " <<bestBinomialParameters[bestTrial].InverseChi2 
+       <<" With n: " <<bestBinomialParameters[bestTrial].n
+       <<" With p: " <<bestBinomialParameters[bestTrial].p <<endl;
                                           
   //Now we loop over the trials again to accomplish two things:
   //1. Find the centrality bin cuts for each trial since the exact values of

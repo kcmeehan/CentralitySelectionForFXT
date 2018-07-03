@@ -1,10 +1,7 @@
 /**************************************************************
- **  This is an example file showing how you will implement your event, 
- **  vertex, and track cuts in each of the following functions.
- **
- **  IMPORTANT!: 
- **  You should modify the cuts within the functions below to
- **  make the cuts whatever you need/want them to be.
+ **  This file includes all the analysis cuts used and is called 
+ **  by the centrality selection code when making the centrality 
+ **  variable histogram.
  **************************************************************/
 
 #include <iostream>
@@ -22,9 +19,11 @@
 Bool_t IsGoodEvent(EventInfo *event){
 
   //Returns true if this event passes all your cuts
+	//Requires events to have at least one primary vertex.
   if (event->GetNPrimaryVertices() <= 0)
     return false;
 
+	//Rejects events that come from the laser trigger instead of the fxt trigger.
   if (event->GetTofMultiplicity() < 50)
     return false;
   
@@ -35,11 +34,12 @@ Bool_t IsGoodEvent(EventInfo *event){
 //_______________________________________________________________
 Bool_t IsGoodVertex(PrimaryVertexInfo *vertex){
 
-  //Returns true if this vertex passes all your cuts
-  if (vertex->GetZVertex() < 210 || vertex->GetZVertex() > 212)
-    return false;
+	//Requires the primary vertex to be a zero-index vertex. 
+  if (vertex->GetVertexIndex() != 0)  
+	    return false;
 
-  if (vertex->GetNTofMatches() < 2)
+  //Requires the vertex of interest to have a z-coordinate of 210 cm <= Vz <= 212 cm. (The target is located at 211 cm).
+  if (vertex->GetZVertex() < 210 || vertex->GetZVertex() > 212)
     return false;
 
   return true;
@@ -48,14 +48,14 @@ Bool_t IsGoodVertex(PrimaryVertexInfo *vertex){
 //_______________________________________________________________
 Bool_t IsGoodTrack(TrackInfo *track){
 
-  //Returns true if this track passes all your cuts
-  
+	//Requires nHitsFit/nHitsPoss >= 0.52 to protect against split tracks
   if (track->GetNFrac() < 0.52)
     return false;
 
-  if (track->GetdEdxHits() == 0)
+	//Rejects y_lab ~0 tracks that go behind the gating grid due to the position of the target
+  if (track->GetdEdxHits() <= 0)
     return false;
-  
+
   return true;
 }
 
@@ -67,9 +67,12 @@ std::vector<double> GetCentralityPercents(){
 
   std::vector<double> centralityPercents;
   //Most Central
-  centralityPercents.push_back(10); //Top 10%
-  centralityPercents.push_back(20); //Top 20%
-  centralityPercents.push_back(30); //Top 30%
+  centralityPercents.push_back(5);  //Top 5%
+  centralityPercents.push_back(10); 
+  centralityPercents.push_back(15); 
+  centralityPercents.push_back(20); 
+  centralityPercents.push_back(25); 
+  centralityPercents.push_back(30); 
   //Most Peripheral
 
   return centralityPercents;
@@ -85,9 +88,12 @@ std::vector<int> GetCentralityCuts(){
   //to most peripheral.
   std::vector<int> centralityCuts;
   //Most Central
-  centralityCuts.push_back(200);
-  centralityCuts.push_back(154);
-  centralityCuts.push_back(100);
+  centralityCuts.push_back(153);
+  centralityCuts.push_back(121);
+  centralityCuts.push_back(97);
+  centralityCuts.push_back(77);
+  centralityCuts.push_back(61);
+  centralityCuts.push_back(48);
   //Most Peripheral
 
   return centralityCuts;
@@ -129,7 +135,7 @@ Int_t GetCentralityBin(Int_t centralityVariable){
   //Determine which centrality bin this primary Vertex belongs to
 
   //Check the high bin
-  if (centralityVariable >= centralityCuts.at(0))
+  if (centralityVariable >= centralityCuts.at(0) && centralityVariable < 240)
     return 0;
 
   //Loop Over the remaining bins and find where this vertex should be binned

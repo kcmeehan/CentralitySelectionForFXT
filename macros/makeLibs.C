@@ -37,14 +37,5 @@ void makeLibs(TString opt=""){
   //Compile your source code
   gSystem->CompileMacro("userfiles/UserCuts.cxx","k");
   gSystem->CompileMacro("src/analysis/utilityFunctions.cxx","k");
-  gSystem->CompileMacro("src/analysis/readerExample.cxx","k");
   gSystem->CompileMacro("src/analysis/centralityVariableDistributions.cxx","k");
-  gSystem->CompileMacro("src/analysis/skimmerAndBinner.cxx","k");
-  gSystem->CompileMacro("src/analysis/fitZTPCUtilities.cxx","k");
-  gSystem->CompileMacro("src/analysis/fitZTPCPions.cxx","k");
-  
-	
-	gSystem->CompileMacro("src/qa/eventQAmaker.cxx","k");
-	gSystem->CompileMacro("src/qa/vertexQAmaker.cxx","k");
-	gSystem->CompileMacro("src/qa/trackQAmaker.cxx","k");
 }
