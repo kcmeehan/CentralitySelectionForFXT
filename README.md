@@ -33,7 +33,7 @@ PERFORMING CENTRALITY SELECTION:
 
 Note: At the end of this script, information on the "best trial" (including the trial number which will be needed for the drawing macro) will be printed. This information includes the multiplicity cutoffs corresponding to each centrality bin. These values should be added to the UserCuts.cxx file in order for the centrality cuts to be drawn when running the drawing macro.
 
-4. Drawing the centrality bins. The figure in the paper draft at the time of this dissertation was drawn with a macro written by Todd Kinghorn and Daniel Brandenburg and is a more polished version of the macro included in this repository and includes a drawing of the pileup simulation. The macro used to draw a simple figure illustrating the centrality variable distribution and the centrality bins is in the drawingmacros directory and is called DrawCentralityBinResults.C. 
+4. Drawing the centrality bins. The figure in the paper draft at the time of this dissertation was drawn with a macro written by Todd Kinghorn and Daniel Brandenburg and is a more polished version of the macro included in this repository and includes a drawing of the pileup simulation. The macro used to draw a simple figure illustrating the centrality variable distribution and the centrality bins is in the drawingmacros directory and is called DrawCentralityBinResults.C. The name of the variable used (nGoodTracks) for centrality selection must be set, along with the path to the centrality root file produced in the previous step. The number of the "best trial" printed out during the previous step must also be selected. 
 
 
 
